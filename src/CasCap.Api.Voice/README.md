@@ -8,13 +8,19 @@ This project isolates voice processing from messaging transports and application
 
 ## Public Surface
 
-The public surface will be documented as production types are extracted into this project.
+The library exposes `SpeechToTextConfig`, `TextToSpeechConfig`, `VoiceMetricsConfig`, the voice
+provider enums and result records under `CasCap.Models`; processing services and provider adapters
+remain under `CasCap.Services`. Register them with `AddSpeechToText` and `AddTextToSpeech` from
+`VoiceServiceCollectionExtensions`.
 
 ## Configuration
 
-Configuration documentation will land with the extracted option types.
+Options bind from `CasCap:SpeechToTextConfig`, `CasCap:TextToSpeechConfig`, and
+`CasCap:VoiceMetricsConfig`. `VoiceMetricsConfig:MetricNamePrefix` defaults to `voice` and should be
+set by a host when its telemetry naming convention requires another prefix.
 
 ## Dependencies
 
-The project uses Microsoft.Extensions.AI abstractions, shared CasCap infrastructure, and optional
-Azure speech services.
+The project uses Microsoft.Extensions.AI abstractions, shared CasCap configuration/extensions/services,
+and optional CasCap Azure authentication and cognitive-services libraries. It has no messaging or
+application-orchestration dependency and is currently non-packable while the extracted API settles.
