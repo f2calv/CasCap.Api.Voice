@@ -17,4 +17,3 @@ public sealed class AzureSpeechTextToSpeechClientTests(ITestOutputHelper output)
         Assert.Skip("Live Azure Speech execution is intentionally disabled in the credential-free suite.");
     }
 }
-

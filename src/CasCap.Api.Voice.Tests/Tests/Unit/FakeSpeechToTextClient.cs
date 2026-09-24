@@ -43,4 +43,3 @@ public sealed class FakeSpeechToTextClient : ISpeechToTextClient
     /// <inheritdoc/>
     public void Dispose() { }
 }
-
