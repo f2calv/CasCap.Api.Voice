@@ -21,6 +21,7 @@ The library provides:
 - text-to-speech adapters for Azure AI Speech, Azure OpenAI, and Piper over Wyoming;
 - bounded media validation and normalization to 16 kHz mono PCM WAV;
 - transport-neutral transcription and synthesis results;
+- stable application-facing transcription and synthesis interfaces;
 - OpenTelemetry-compatible voice metrics; and
 - dependency-injection registration through `AddSpeechToText` and `AddTextToSpeech`.
 

@@ -28,9 +28,8 @@ public static class VoiceServiceCollectionExtensions
                 SpeechToTextProvider.Azure => ActivatorUtilities.CreateInstance<AzureSpeechToTextClient>(sp),
                 _ => ActivatorUtilities.CreateInstance<WhisperAsrSpeechToTextClient>(sp),
             });
+        AddVoiceTranscriptionServices(services);
 #pragma warning restore MEAI001
-        services.TryAddSingleton<VoiceTranscriptionMetrics>();
-        services.TryAddSingleton<VoiceMessageTranscriptionService>();
     }
 
     /// <summary>Registers text-to-speech configuration, providers, and the synthesis policy.</summary>
@@ -61,9 +60,18 @@ public static class VoiceServiceCollectionExtensions
                 _ => ActivatorUtilities.CreateInstance<AzureSpeechTextToSpeechClient>(sp),
             };
         });
+        AddVoiceSynthesisService(services);
 #pragma warning restore MEAI001
-        services.TryAddSingleton<VoiceReplySynthesisService>();
     }
+
+    private static void AddVoiceTranscriptionServices(IServiceCollection services)
+    {
+        services.TryAddSingleton<VoiceTranscriptionMetrics>();
+        services.TryAddSingleton<IVoiceTranscriptionService, VoiceMessageTranscriptionService>();
+    }
+
+    private static void AddVoiceSynthesisService(IServiceCollection services) =>
+        services.TryAddSingleton<IVoiceSynthesisService, VoiceReplySynthesisService>();
 
     private static void AddAzureSpeechService(this IServiceCollection services)
     {

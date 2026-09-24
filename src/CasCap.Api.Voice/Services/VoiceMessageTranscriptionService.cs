@@ -21,7 +21,7 @@ public sealed partial class VoiceMessageTranscriptionService(
     ILogger<VoiceMessageTranscriptionService> logger,
     IOptions<SpeechToTextConfig> options,
     ISpeechToTextClient speechToTextSvc,
-    VoiceTranscriptionMetrics metrics) : IDisposable
+    VoiceTranscriptionMetrics metrics) : IVoiceTranscriptionService, IDisposable
 {
     private const int _targetSampleRate = 16_000;
     private const int _targetChannels = 1;
@@ -56,7 +56,7 @@ public sealed partial class VoiceMessageTranscriptionService(
     /// <param name="cancellationToken">Cancellation token owned by the caller.</param>
     /// <returns>The typed outcome; only a successful outcome carries transcript text.</returns>
     /// <exception cref="OperationCanceledException">Thrown when <paramref name="cancellationToken"/> is cancelled.</exception>
-    public async Task<VoiceTranscriptionResult> Transcribe(byte[] audio, string mediaType,
+    public async Task<VoiceTranscriptionResult> TranscribeAsync(byte[] audio, string mediaType,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(audio);
