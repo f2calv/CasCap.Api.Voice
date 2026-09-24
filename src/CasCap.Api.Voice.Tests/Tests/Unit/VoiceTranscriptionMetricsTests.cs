@@ -6,26 +6,29 @@ namespace CasCap.Tests.Unit;
 [Trait("Category", "SpeechToText")]
 public sealed class VoiceTranscriptionMetricsTests
 {
+    private static int _metricPrefixSequence;
+
     [Fact]
     public void Record_SuccessPublishesEveryStage()
     {
-        var measurements = Collect(m => m.Record(VoiceTranscriptionResult.Success("hello",
+        var (metricNamePrefix, measurements) = Collect(m => m.Record(VoiceTranscriptionResult.Success("hello",
             TimeSpan.FromSeconds(4), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(1))));
 
-        Assert.Equal(4, Value(measurements, "voice-test.voice.audio.duration"));
-        Assert.Equal(2, Value(measurements, "voice-test.voice.transcode.duration"));
-        Assert.Equal(1, Value(measurements, "voice-test.voice.transcription.duration"));
-        Assert.Equal(2, Value(measurements, "voice-test.voice.transcode.speed"));
-        Assert.Equal(4, Value(measurements, "voice-test.voice.transcription.speed"));
-        Assert.Equal(1, Value(measurements, "voice-test.voice.transcriptions"));
+        Assert.Equal(4, Value(measurements, $"{metricNamePrefix}.voice.audio.duration"));
+        Assert.Equal(2, Value(measurements, $"{metricNamePrefix}.voice.transcode.duration"));
+        Assert.Equal(1, Value(measurements, $"{metricNamePrefix}.voice.transcription.duration"));
+        Assert.Equal(2, Value(measurements, $"{metricNamePrefix}.voice.transcode.speed"));
+        Assert.Equal(4, Value(measurements, $"{metricNamePrefix}.voice.transcription.speed"));
+        Assert.Equal(1, Value(measurements, $"{metricNamePrefix}.voice.transcriptions"));
     }
 
     [Fact]
     public void Record_FailureStillCountsOutcomeAndProvider()
     {
-        var measurements = Collect(m => m.Record(VoiceTranscriptionResult.Failure(
+        var (metricNamePrefix, measurements) = Collect(m => m.Record(VoiceTranscriptionResult.Failure(
             VoiceTranscriptionOutcome.BackendFailed)));
-        var counter = Assert.Single(measurements, x => x.Instrument == "voice-test.voice.transcriptions");
+        var counter = Assert.Single(measurements,
+            x => x.Instrument == $"{metricNamePrefix}.voice.transcriptions");
 
         Assert.Equal(nameof(VoiceTranscriptionOutcome.BackendFailed),
             Assert.Single(counter.Tags, t => t.Key == VoiceTranscriptionMetrics.OutcomeTagName).Value);
@@ -37,24 +40,26 @@ public sealed class VoiceTranscriptionMetricsTests
     [Fact]
     public void Record_SkippedTranscodeIsNotReported()
     {
-        var measurements = Collect(m => m.Record(VoiceTranscriptionResult.Success("hello",
+        var (metricNamePrefix, measurements) = Collect(m => m.Record(VoiceTranscriptionResult.Success("hello",
             audioDuration: TimeSpan.FromSeconds(4), transcriptionDuration: TimeSpan.FromSeconds(1))));
 
-        Assert.DoesNotContain(measurements, x => x.Instrument.StartsWith("voice-test.voice.transcode",
+        Assert.DoesNotContain(measurements, x => x.Instrument.StartsWith($"{metricNamePrefix}.voice.transcode",
             StringComparison.Ordinal));
     }
 
     private static double Value(List<Measured> measurements, string instrument) =>
         Assert.Single(measurements, x => x.Instrument == instrument).Value;
 
-    private static List<Measured> Collect(Action<VoiceTranscriptionMetrics> action)
+    private static (string MetricNamePrefix, List<Measured> Measurements) Collect(
+        Action<VoiceTranscriptionMetrics> action)
     {
+        var metricNamePrefix = $"voice-test-{Interlocked.Increment(ref _metricPrefixSequence)}";
         var measurements = new List<Measured>();
         using var listener = new MeterListener
         {
             InstrumentPublished = (instrument, l) =>
             {
-                if (instrument.Name.StartsWith("voice-test.voice.", StringComparison.Ordinal))
+                if (instrument.Name.StartsWith($"{metricNamePrefix}.voice.", StringComparison.Ordinal))
                     l.EnableMeasurementEvents(instrument);
             },
         };
@@ -63,9 +68,9 @@ public sealed class VoiceTranscriptionMetricsTests
         listener.SetMeasurementEventCallback<long>((instrument, value, tags, _) =>
             measurements.Add(new(instrument.Name, value, tags.ToArray())));
         listener.Start();
-        action(TestMetrics.Voice());
+        action(TestMetrics.Voice(metricNamePrefix));
         listener.RecordObservableInstruments();
-        return measurements;
+        return (metricNamePrefix, measurements);
     }
 
     private sealed record Measured(string Instrument, double Value, KeyValuePair<string, object?>[] Tags);

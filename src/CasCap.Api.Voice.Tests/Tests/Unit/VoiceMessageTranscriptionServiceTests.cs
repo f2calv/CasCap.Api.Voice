@@ -87,7 +87,8 @@ public sealed class VoiceMessageTranscriptionServiceTests
     private static VoiceMessageTranscriptionService CreateService(FakeSpeechToTextClient client,
         SpeechToTextConfig? config = null) =>
         new(NullLogger<VoiceMessageTranscriptionService>.Instance,
-            Options.Create(config ?? new SpeechToTextConfig()), client, TestMetrics.Voice());
+            Options.Create(config ?? new SpeechToTextConfig()), client,
+            TestMetrics.Voice("voice-transcription-service-test"));
 
     private static byte[] CreateWav(double seconds = 1)
     {
