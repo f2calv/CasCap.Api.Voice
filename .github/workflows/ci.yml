@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  lint:
+    permissions:
+      contents: read
+    uses: f2calv/gha-workflows/.github/workflows/lint.yml@v1
+
+  build:
+    permissions:
+      contents: read
+    uses: f2calv/gha-workflows/.github/workflows/app-build-dotnet.yml@v1
+    with:
+      version: 0.0.0-local
+      solution-name: CasCap.Api.Voice.Release.slnx
+      execute-tests: true
+      dotnet-test-args: '["--filter-not-trait", "Category=Integration"]'

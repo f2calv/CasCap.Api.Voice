@@ -1,0 +1,15 @@
+.vs/
+**/bin/
+**/obj/
+artifacts/
+TestResults/
+*.coverage
+*.coveragexml
+*.nupkg
+*.snupkg
+*.suo
+*.user
+*.userosscache
+*.trx
+appsettings.Local*.json
+pii-report*.csv

@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/CasCap.Api.Voice/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+  </Folder>
+  <Folder Name="/CasCap.Api.Voice/">
+    <Project Path="src/CasCap.Api.Voice/CasCap.Api.Voice.csproj" />
+    <Project Path="src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj" />
+  </Folder>
+</Solution>

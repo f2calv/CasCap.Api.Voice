@@ -1,0 +1,27 @@
+# Shared pre-commit configuration. Linting is run manually and by CI.
+default_install_hook_types: [pre-push]
+
+exclude: |
+  (?x)^(
+    \.editorconfig|
+    Directory\.Packages\.props
+  )$
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  - id: check-xml
+  - id: check-yaml
+    args: [--allow-multiple-documents]
+  - id: check-merge-conflict
+  - id: check-case-conflict
+  - id: check-added-large-files
+    args: [--maxkb=150]
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+- repo: https://github.com/igorshubovych/markdownlint-cli
+  rev: v0.49.1
+  hooks:
+  - id: markdownlint
+    args: ["--disable", "MD013", "--disable", "MD034", "--"]

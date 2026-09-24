@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Description>Provider-neutral speech-to-text and text-to-speech components for .NET applications.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.AI" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\..\CasCap.Api.Azure\src\CasCap.Api.Azure.Auth\CasCap.Api.Azure.Auth.csproj" />
+    <ProjectReference Include="..\..\..\CasCap.Api.Azure\src\CasCap.Api.Azure.CognitiveServices\CasCap.Api.Azure.CognitiveServices.csproj" />
+    <ProjectReference Include="..\..\..\CasCap.Common\src\CasCap.Common.Configuration\CasCap.Common.Configuration.csproj" />
+    <ProjectReference Include="..\..\..\CasCap.Common\src\CasCap.Common.Extensions\CasCap.Common.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\CasCap.Common\src\CasCap.Common.Services\CasCap.Common.Services.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="CasCap.Api.Azure.Auth" />
+    <PackageReference Include="CasCap.Api.Azure.CognitiveServices" />
+    <PackageReference Include="CasCap.Common.Configuration" />
+    <PackageReference Include="CasCap.Common.Extensions" />
+    <PackageReference Include="CasCap.Common.Services" />
+  </ItemGroup>
+
+</Project>
