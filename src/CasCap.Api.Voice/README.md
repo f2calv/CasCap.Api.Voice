@@ -23,4 +23,5 @@ set by a host when its telemetry naming convention requires another prefix.
 
 The project uses Microsoft.Extensions.AI abstractions, shared CasCap configuration/extensions/services,
 and optional CasCap Azure authentication and cognitive-services libraries. It has no messaging or
-application-orchestration dependency and is currently non-packable while the extracted API settles.
+application-orchestration dependency. Release builds consume exact published package versions for
+all cross-repository dependencies.

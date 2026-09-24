@@ -5,8 +5,10 @@
   <ItemGroup>
     <PackageVersion Include="CasCap.Api.Azure.Auth" Version="1.6.2" />
     <PackageVersion Include="CasCap.Api.Azure.CognitiveServices" Version="1.6.2" />
+    <PackageVersion Include="CasCap.Common.Abstractions" Version="4.14.1" />
     <PackageVersion Include="CasCap.Common.Configuration" Version="4.14.1" />
     <PackageVersion Include="CasCap.Common.Extensions" Version="4.14.1" />
+    <PackageVersion Include="CasCap.Common.Net" Version="4.14.1" />
     <PackageVersion Include="CasCap.Common.Services" Version="4.14.1" />
     <PackageVersion Include="CasCap.Common.Testing" Version="4.14.1" />
     <PackageVersion Include="Microsoft.Extensions.AI" Version="10.10.0" />

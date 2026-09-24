@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Description>Provider-neutral speech-to-text and text-to-speech components for .NET applications.</Description>
-    <IsPackable>false</IsPackable>
+    <IsPackable>true</IsPackable>
+    <PackageTags>speech-to-text,text-to-speech,voice,whisper,ffmpeg,azure,piper,dotnet</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,8 +4,14 @@ Provider-neutral speech-to-text and text-to-speech components for .NET applicati
 
 ## Status
 
-The library is intentionally non-packable while its public contract is stabilized across its first
-application consumers.
+The library is published as the `CasCap.Api.Voice` NuGet package. Its provider-neutral contract is
+shared by applications that need speech processing without taking a messaging dependency.
+
+## Installation
+
+```powershell
+dotnet package add CasCap.Api.Voice
+```
 
 ## Public Surface
 
@@ -26,8 +32,8 @@ Configuration binds from `CasCap:SpeechToTextConfig`, `CasCap:TextToSpeechConfig
 
 ## Dependencies
 
-Development builds use adjacent source checkouts for shared CasCap libraries. Release builds use
-their published package equivalents so continuous integration remains self-contained.
+Development builds use adjacent source checkouts for shared CasCap libraries. Release builds and the
+published package use their exact NuGet package equivalents.
 
 ### Runtime and Container Dependencies
 
