@@ -50,4 +50,3 @@ public sealed class FakeTextToSpeechClient : ITextToSpeechClient
     /// <inheritdoc/>
     public void Dispose() { }
 }
-

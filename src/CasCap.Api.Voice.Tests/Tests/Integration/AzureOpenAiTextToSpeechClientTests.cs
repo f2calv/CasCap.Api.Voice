@@ -17,4 +17,3 @@ public sealed class AzureOpenAiTextToSpeechClientTests(ITestOutputHelper output)
         Assert.Skip("Live Azure OpenAI execution is intentionally disabled in the credential-free suite.");
     }
 }
-

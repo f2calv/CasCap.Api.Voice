@@ -53,4 +53,3 @@ public sealed class VoiceReplySynthesisServiceTests
         new(NullLogger<VoiceReplySynthesisService>.Instance, client,
             Options.Create(new TextToSpeechConfig { Mode = mode }));
 }
-

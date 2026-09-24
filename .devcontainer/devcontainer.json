@@ -1,0 +1,23 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at https://github.com/devcontainers/templates/tree/main/src/dotnet.
+{
+    "name": "CasCap.Api.Voice",
+    "image": "mcr.microsoft.com/devcontainers/dotnet:1-10.0-bookworm",
+    "features": {
+        "ghcr.io/devcontainers-extra/features/pre-commit:2": {},
+        "ghcr.io/devcontainers/features/powershell:2": {}
+    },
+    "postCreateCommand": "bash ./.devcontainer/postCreateCommand.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "DavidAnson.vscode-markdownlint",
+                "github.vscode-github-actions",
+                "ms-azuretools.vscode-containers",
+                "ms-dotnettools.csdevkit",
+                "ms-vscode.powershell",
+                "redhat.vscode-yaml"
+            ]
+        }
+    }
+}

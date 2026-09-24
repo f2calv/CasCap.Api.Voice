@@ -72,6 +72,10 @@ not require writable temporary-file storage.
 
 ## Development
 
+Open the repository in its Dev Container for .NET 10, PowerShell, pre-commit, and an ffmpeg build
+that includes the `libopus` encoder. Container creation restores the standalone Release solution but
+does not install Git hooks automatically.
+
 Build the Debug solution:
 
 ```powershell
@@ -86,6 +90,12 @@ dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj -
 
 Integration tests requiring external speech services are explicitly categorized and excluded from
 that command.
+
+Run all repository lint hooks manually:
+
+```bash
+pre-commit run --all-files
+```
 
 ## License
 
