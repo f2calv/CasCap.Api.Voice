@@ -55,7 +55,7 @@ public sealed class VoiceServiceCollectionExtensionsTests
 
     private sealed class CustomTranscriptionService : IVoiceTranscriptionService
     {
-        public Task<VoiceTranscriptionResult> TranscribeAsync(
+        public Task<VoiceTranscriptionResult> Transcribe(
             byte[] audio,
             string mediaType,
             CancellationToken cancellationToken = default) =>

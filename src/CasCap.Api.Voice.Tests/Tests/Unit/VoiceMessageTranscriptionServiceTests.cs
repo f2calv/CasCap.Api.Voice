@@ -15,7 +15,7 @@ public sealed class VoiceMessageTranscriptionServiceTests
         var client = new FakeSpeechToTextClient();
         using var service = CreateService(client);
 
-        var result = await service.TranscribeAsync(CreateWav(), mediaType, TestContext.Current.CancellationToken);
+        var result = await service.Transcribe(CreateWav(), mediaType, TestContext.Current.CancellationToken);
 
         Assert.Equal(VoiceTranscriptionOutcome.Unsupported, result.Outcome);
         Assert.Equal(0, client.Requests);
@@ -27,7 +27,7 @@ public sealed class VoiceMessageTranscriptionServiceTests
         var client = new FakeSpeechToTextClient();
         using var service = CreateService(client);
 
-        var result = await service.TranscribeAsync([], "audio/wav", TestContext.Current.CancellationToken);
+        var result = await service.Transcribe([], "audio/wav", TestContext.Current.CancellationToken);
 
         Assert.Equal(VoiceTranscriptionOutcome.Invalid, result.Outcome);
         Assert.Equal(0, client.Requests);
@@ -39,7 +39,7 @@ public sealed class VoiceMessageTranscriptionServiceTests
         var client = new FakeSpeechToTextClient { Transcript = "  hello   there  " };
         using var service = CreateService(client);
 
-        var result = await service.TranscribeAsync(CreateWav(), "audio/wav", TestContext.Current.CancellationToken);
+        var result = await service.Transcribe(CreateWav(), "audio/wav", TestContext.Current.CancellationToken);
 
         Assert.Equal(VoiceTranscriptionOutcome.Success, result.Outcome);
         Assert.Equal("hello there", result.Text);
@@ -55,7 +55,7 @@ public sealed class VoiceMessageTranscriptionServiceTests
         var client = new FakeSpeechToTextClient { Transcript = "   " };
         using var service = CreateService(client);
 
-        var result = await service.TranscribeAsync(CreateWav(), "audio/wav", TestContext.Current.CancellationToken);
+        var result = await service.Transcribe(CreateWav(), "audio/wav", TestContext.Current.CancellationToken);
 
         Assert.Equal(VoiceTranscriptionOutcome.EmptyTranscript, result.Outcome);
     }
@@ -66,7 +66,7 @@ public sealed class VoiceMessageTranscriptionServiceTests
         var client = new FakeSpeechToTextClient { Failure = new HttpRequestException("backend failed") };
         using var service = CreateService(client);
 
-        var result = await service.TranscribeAsync(CreateWav(), "audio/wav", TestContext.Current.CancellationToken);
+        var result = await service.Transcribe(CreateWav(), "audio/wav", TestContext.Current.CancellationToken);
 
         Assert.Equal(VoiceTranscriptionOutcome.BackendFailed, result.Outcome);
     }
@@ -77,7 +77,7 @@ public sealed class VoiceMessageTranscriptionServiceTests
         var client = new FakeSpeechToTextClient();
         using var service = CreateService(client, new() { MaxDurationSeconds = 1 });
 
-        var result = await service.TranscribeAsync(CreateWav(seconds: 2), "audio/wav",
+        var result = await service.Transcribe(CreateWav(seconds: 2), "audio/wav",
             TestContext.Current.CancellationToken);
 
         Assert.Equal(VoiceTranscriptionOutcome.Oversized, result.Outcome);

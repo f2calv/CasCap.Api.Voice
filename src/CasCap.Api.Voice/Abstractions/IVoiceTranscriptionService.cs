@@ -8,7 +8,7 @@ public interface IVoiceTranscriptionService
     /// <param name="mediaType">Declared audio MIME type.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A typed terminal outcome containing transcript text only on success.</returns>
-    Task<VoiceTranscriptionResult> TranscribeAsync(
+    Task<VoiceTranscriptionResult> Transcribe(
         byte[] audio,
         string mediaType,
         CancellationToken cancellationToken = default);
