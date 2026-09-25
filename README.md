@@ -86,7 +86,7 @@ dotnet build CasCap.Api.Voice.Debug.slnx --configuration Debug
 Run the credential-free unit tests:
 
 ```powershell
-dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --framework net10.0 -- --filter-not-trait Category=Integration
+dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --framework net10.0 --filter-not-trait Category=Integration
 ```
 
 Integration tests requiring external speech services are explicitly categorized and excluded from
