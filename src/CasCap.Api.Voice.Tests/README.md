@@ -8,7 +8,7 @@ default local run.
 
 | Area | Methods | Cases |
 | --- | ---: | ---: |
-| Unit | 21 | 41 |
+| Unit | 25 | 45 |
 | Integration | 4 | 4 |
 
 ## Trait Categories
@@ -38,6 +38,7 @@ Tests/
     ├── TestMetrics.cs
     ├── VoiceMessageTranscriptionServiceTests.cs
     ├── VoiceReplySynthesisServiceTests.cs
+    ├── VoiceServiceCollectionExtensionsTests.cs
     ├── VoiceTranscriptionMetricsTests.cs
     └── WhisperAsrSpeechToTextClientTests.cs
 ```

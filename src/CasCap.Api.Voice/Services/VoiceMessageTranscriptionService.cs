@@ -21,7 +21,7 @@ public sealed partial class VoiceMessageTranscriptionService(
     ILogger<VoiceMessageTranscriptionService> logger,
     IOptions<SpeechToTextConfig> options,
     ISpeechToTextClient speechToTextSvc,
-    VoiceTranscriptionMetrics metrics) : IDisposable
+    VoiceTranscriptionMetrics metrics) : IVoiceTranscriptionService, IDisposable
 {
     private const int _targetSampleRate = 16_000;
     private const int _targetChannels = 1;

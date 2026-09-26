@@ -33,7 +33,7 @@ jobs:
       tag-and-release: false
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [versioning]
     permissions:
       contents: read

@@ -11,7 +11,7 @@ namespace CasCap.Services;
 /// decoration on a reply that has already been composed, so every failure is contained here and
 /// reported as "no attachment" rather than propagating and costing the sender their text reply.
 /// </remarks>
-public sealed partial class VoiceReplySynthesisService
+public sealed partial class VoiceReplySynthesisService : IVoiceSynthesisService
 {
     private readonly ILogger<VoiceReplySynthesisService> _logger;
     private readonly ITextToSpeechClient _textToSpeechClient;

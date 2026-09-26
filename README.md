@@ -21,6 +21,7 @@ The library provides:
 - text-to-speech adapters for Azure AI Speech, Azure OpenAI, and Piper over Wyoming;
 - bounded media validation and normalization to 16 kHz mono PCM WAV;
 - transport-neutral transcription and synthesis results;
+- stable application-facing transcription and synthesis interfaces;
 - OpenTelemetry-compatible voice metrics; and
 - dependency-injection registration through `AddSpeechToText` and `AddTextToSpeech`.
 
@@ -85,7 +86,7 @@ dotnet build CasCap.Api.Voice.Debug.slnx --configuration Debug
 Run the credential-free unit tests:
 
 ```powershell
-dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --framework net10.0 -- --filter-not-trait Category=Integration
+dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --framework net10.0 --filter-not-trait Category=Integration
 ```
 
 Integration tests requiring external speech services are explicitly categorized and excluded from

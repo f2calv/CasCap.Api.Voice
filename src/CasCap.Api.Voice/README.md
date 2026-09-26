@@ -8,10 +8,17 @@ This project isolates voice processing from messaging transports and application
 
 ## Public Surface
 
-The library exposes `SpeechToTextConfig`, `TextToSpeechConfig`, `VoiceMetricsConfig`, the voice
-provider enums and result records under `CasCap.Models`; processing services and provider adapters
-remain under `CasCap.Services`. Register them with `AddSpeechToText` and `AddTextToSpeech` from
-`VoiceServiceCollectionExtensions`.
+Applications depend on the stable `IVoiceTranscriptionService` and `IVoiceSynthesisService`
+contracts under `CasCap.Abstractions`. These contracts return transport-neutral
+`VoiceTranscriptionResult` and `VoiceSynthesisResult` values.
+
+Provider adapters share the Microsoft.Extensions.AI `ISpeechToTextClient` and
+`ITextToSpeechClient` contracts. Configuration selects the default adapter, while dependency
+injection can replace either provider client or either complete Voice pipeline.
+
+The library exposes `SpeechToTextConfig`, `TextToSpeechConfig`, `VoiceMetricsConfig`, provider enums,
+and result records under `CasCap.Models`. Register the default pipelines with `AddSpeechToText` and
+`AddTextToSpeech` from `VoiceServiceCollectionExtensions`.
 
 ## Configuration
 
