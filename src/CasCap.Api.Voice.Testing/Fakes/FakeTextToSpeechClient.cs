@@ -1,25 +1,26 @@
-using System.Runtime.CompilerServices;
+namespace CasCap.Fakes;
 
-namespace CasCap.Tests.Unit;
-
+//ITextToSpeechClient is published as experimental (MEAI001); see AzureSpeechTextToSpeechClient.
 #pragma warning disable MEAI001
 
-/// <summary>A canned text-to-speech client for voice policy tests.</summary>
+/// <summary>An <see cref="ITextToSpeechClient"/> returning canned audio, so voice consumers can be tested without a backend.</summary>
 public sealed class FakeTextToSpeechClient : ITextToSpeechClient
 {
-    /// <summary>The audio returned by the fake.</summary>
+    /// <summary>The audio returned by <see cref="GetAudioAsync"/>.</summary>
+    /// <remarks>Defaults to the four-byte <c>OggS</c> container signature.</remarks>
     public byte[] Audio { get; set; } = [0x4F, 0x67, 0x67, 0x53];
 
-    /// <summary>The media type returned by the fake.</summary>
+    /// <summary>The media type reported for <see cref="Audio"/>.</summary>
+    /// <remarks>Defaults to <see cref="AzureSpeechTextToSpeechClient.OggOpusMediaType"/>.</remarks>
     public string MediaType { get; set; } = AzureSpeechTextToSpeechClient.OggOpusMediaType;
 
-    /// <summary>An exception to throw instead of returning a response.</summary>
+    /// <summary>When set, <see cref="GetAudioAsync"/> fails with this instead of returning.</summary>
     public Exception? Failure { get; set; }
 
-    /// <summary>The number of calls received.</summary>
+    /// <summary>The number of synthesis requests received.</summary>
     public int Requests { get; private set; }
 
-    /// <summary>The most recent text sent to the fake.</summary>
+    /// <summary>The text of the most recent request, so a test can assert what was spoken.</summary>
     public string? LastText { get; private set; }
 
     /// <inheritdoc/>

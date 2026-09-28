@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CasCap.Api.Voice\CasCap.Api.Voice.csproj" />
+    <ProjectReference Include="..\CasCap.Api.Voice.Testing\CasCap.Api.Voice.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">

@@ -1,29 +1,35 @@
-using System.Runtime.CompilerServices;
+namespace CasCap.Fakes;
 
-namespace CasCap.Tests.Unit;
-
+//ISpeechToTextClient is published as experimental (MEAI001); see WhisperAsrSpeechToTextClient.
 #pragma warning disable MEAI001
 
-/// <summary>A canned speech-to-text client for voice policy tests.</summary>
+/// <summary>An <see cref="ISpeechToTextClient"/> returning a canned transcript, so voice consumers can be tested without a backend.</summary>
 public sealed class FakeSpeechToTextClient : ISpeechToTextClient
 {
-    /// <summary>The transcript returned by the fake.</summary>
+    /// <summary>The transcript returned by <see cref="GetTextAsync"/>.</summary>
+    /// <remarks>Defaults to <c>"transcribed text"</c>.</remarks>
     public string Transcript { get; set; } = "transcribed text";
 
-    /// <summary>An exception to throw instead of returning a response.</summary>
+    /// <summary>When set, <see cref="GetTextAsync"/> fails with this instead of returning.</summary>
     public Exception? Failure { get; set; }
 
-    /// <summary>The number of calls received.</summary>
+    /// <summary>The number of transcription requests received.</summary>
     public int Requests { get; private set; }
 
+    /// <summary>When set, <see cref="GetTextAsync"/> waits on it before returning.</summary>
+    /// <remarks>Lets a test observe what happens while transcription is still in flight.</remarks>
+    public TaskCompletionSource? Gate { get; set; }
+
     /// <inheritdoc/>
-    public Task<SpeechToTextResponse> GetTextAsync(Stream audioSpeechStream,
+    public async Task<SpeechToTextResponse> GetTextAsync(Stream audioSpeechStream,
         SpeechToTextOptions? options = null, CancellationToken cancellationToken = default)
     {
         Requests++;
+        if (Gate is not null)
+            await Gate.Task.WaitAsync(cancellationToken);
         if (Failure is not null)
-            return Task.FromException<SpeechToTextResponse>(Failure);
-        return Task.FromResult(new SpeechToTextResponse(Transcript));
+            throw Failure;
+        return new SpeechToTextResponse(Transcript);
     }
 
     /// <inheritdoc/>
