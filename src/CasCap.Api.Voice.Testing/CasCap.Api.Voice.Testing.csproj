@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Description>Canned speech-to-text and text-to-speech clients for testing code built on CasCap.Api.Voice without a speech backend.</Description>
+    <IsPackable>true</IsPackable>
+    <PackageTags>speech-to-text,text-to-speech,voice,testing,fakes,dotnet</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CasCap.Api.Voice\CasCap.Api.Voice.csproj" />
+  </ItemGroup>
+
+</Project>

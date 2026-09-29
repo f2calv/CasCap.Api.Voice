@@ -24,7 +24,8 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(MSBuildProjectName.Contains('Test'))">
+  <!-- Test projects skip XML documentation; the published *.Testing package keeps it. -->
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
 

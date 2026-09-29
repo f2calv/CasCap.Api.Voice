@@ -31,8 +31,6 @@ Tests/
 │   ├── AzureSpeechToTextClientTests.cs
 │   └── PiperTextToSpeechClientTests.cs
 └── Unit/
-    ├── FakeSpeechToTextClient.cs
-    ├── FakeTextToSpeechClient.cs
     ├── PiperEndpointTests.cs
     ├── SpeechTextNormalizerTests.cs
     ├── TestMetrics.cs
@@ -42,3 +40,7 @@ Tests/
     ├── VoiceTranscriptionMetricsTests.cs
     └── WhisperAsrSpeechToTextClientTests.cs
 ```
+
+The speech-to-text and text-to-speech fakes come from the
+[`CasCap.Api.Voice.Testing`](../CasCap.Api.Voice.Testing/README.md) project, which is also
+published for downstream consumers.

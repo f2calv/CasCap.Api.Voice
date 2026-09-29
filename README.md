@@ -7,10 +7,14 @@ Provider-neutral speech-to-text and text-to-speech components for .NET applicati
 The library is published as the `CasCap.Api.Voice` NuGet package. Its provider-neutral contract is
 shared by applications that need speech processing without taking a messaging dependency.
 
+The companion [`CasCap.Api.Voice.Testing`](src/CasCap.Api.Voice.Testing/README.md) package
+provides canned speech-to-text and text-to-speech clients for consumers' test projects.
+
 ## Installation
 
 ```powershell
 dotnet package add CasCap.Api.Voice
+dotnet package add CasCap.Api.Voice.Testing # test projects only
 ```
 
 ## Public Surface
