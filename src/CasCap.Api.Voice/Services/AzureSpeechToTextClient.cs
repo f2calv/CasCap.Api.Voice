@@ -93,7 +93,7 @@ public sealed partial class AzureSpeechToTextClient : ISpeechToTextClient
 
     //The configured locales win: Azure rejects a bare language code such as "en" with a 400, and
     //  SpeechToTextOptions.SpeechLanguage carries exactly that for the whisper providers.
-    private static IReadOnlyList<string>? ResolveLocales(SpeechToTextOptions? speechToTextOptions,
+    private static string[]? ResolveLocales(SpeechToTextOptions? speechToTextOptions,
         SpeechToTextConfig config)
     {
         if (config.AzureLocales is { Length: > 0 } locales)
