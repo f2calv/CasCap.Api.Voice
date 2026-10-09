@@ -17,17 +17,14 @@ namespace CasCap.Services;
 /// pass. The adapter carries no messaging-transport types or deployment coordinates and never logs multipart
 /// bodies, part filenames, audio bytes or transcripts.
 /// </remarks>
-public sealed partial class WhisperAsrSpeechToTextClient : HttpClientBase, ISpeechToTextClient
+public sealed partial class WhisperAsrSpeechToTextClient(
+    ILogger<WhisperAsrSpeechToTextClient> logger,
+    IOptions<SpeechToTextConfig> options,
+    IHttpClientFactory httpClientFactory)
+    : HttpClientBase(logger, httpClientFactory.CreateClient(HttpClientName)), ISpeechToTextClient
 {
-    private readonly IOptions<SpeechToTextConfig> _options;
+    private IOptions<SpeechToTextConfig> ConfigOptions => options;
 
-    /// <summary>Initializes a new instance of the <see cref="WhisperAsrSpeechToTextClient"/> class.</summary>
-    public WhisperAsrSpeechToTextClient(ILogger<WhisperAsrSpeechToTextClient> logger,
-        IOptions<SpeechToTextConfig> options, IHttpClientFactory httpClientFactory)
-        : base(logger, httpClientFactory.CreateClient(HttpClientName))
-    {
-        _options = options;
-    }
 
     /// <summary>The named <see cref="HttpClient"/> registration this adapter resolves.</summary>
     public const string HttpClientName = nameof(WhisperAsrSpeechToTextClient);
@@ -59,9 +56,9 @@ public sealed partial class WhisperAsrSpeechToTextClient : HttpClientBase, ISpee
         var mediaType = ResolveMediaType(options);
         //encode=false skips the server-side ffmpeg pass; the caller has already produced the WAV it wants.
         var encode = !IsWav(mediaType);
-        var language = options?.SpeechLanguage ?? _options.Value.Language;
+        var language = options?.SpeechLanguage ?? ConfigOptions.Value.Language;
         var requestUri =
-            $"{_options.Value.WhisperAsrEndpoint.TrimEnd('/')}{RequestPath}" +
+            $"{ConfigOptions.Value.WhisperAsrEndpoint.TrimEnd('/')}{RequestPath}" +
             $"?task=transcribe&language={Uri.EscapeDataString(language)}" +
             $"&encode={(encode ? "true" : "false")}&output=json";
 
@@ -88,7 +85,7 @@ public sealed partial class WhisperAsrSpeechToTextClient : HttpClientBase, ISpee
 
         return new SpeechToTextResponse(result.Text ?? string.Empty)
         {
-            ModelId = options?.ModelId ?? _options.Value.ModelId,
+            ModelId = options?.ModelId ?? ConfigOptions.Value.ModelId,
             RawRepresentation = result,
         };
     }

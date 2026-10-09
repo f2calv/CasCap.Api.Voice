@@ -12,20 +12,13 @@ namespace CasCap.Services;
 /// same <see cref="Azure.Core.TokenCredential"/> as the rest of the application. The adapter carries
 /// no messaging-transport types and never logs the text it speaks.
 /// </remarks>
-public sealed partial class AzureSpeechTextToSpeechClient : ITextToSpeechClient
+public sealed partial class AzureSpeechTextToSpeechClient(
+    ILogger<AzureSpeechTextToSpeechClient> logger,
+    ISpeechService speechService,
+    IOptions<TextToSpeechConfig> options) : ITextToSpeechClient
 {
-    private readonly ILogger<AzureSpeechTextToSpeechClient> _logger;
-    private readonly ISpeechService _speechService;
-    private readonly IOptions<TextToSpeechConfig> _options;
+    private IOptions<TextToSpeechConfig> ConfigOptions => options;
 
-    /// <summary>Initializes a new instance of the <see cref="AzureSpeechTextToSpeechClient"/> class.</summary>
-    public AzureSpeechTextToSpeechClient(ILogger<AzureSpeechTextToSpeechClient> logger,
-        ISpeechService speechService, IOptions<TextToSpeechConfig> options)
-    {
-        _logger = logger;
-        _speechService = speechService;
-        _options = options;
-    }
 
     /// <summary>The media type of the audio this adapter produces.</summary>
     /// <remarks>Opus in an Ogg container, which is what messaging clients use for voice notes.</remarks>
@@ -37,11 +30,11 @@ public sealed partial class AzureSpeechTextToSpeechClient : ITextToSpeechClient
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
-        var voice = options?.VoiceId ?? _options.Value.AzureSpeechVoice;
-        var audio = await _speechService.SynthesizeAsync(text, voice, cancellationToken);
+        var voice = options?.VoiceId ?? ConfigOptions.Value.AzureSpeechVoice;
+        var audio = await speechService.SynthesizeAsync(text, voice, cancellationToken);
         if (audio is null || audio.Length == 0)
         {
-            LogNoAudioSynthesized(_logger, text.Length);
+            LogNoAudioSynthesized(logger, text.Length);
             return new TextToSpeechResponse();
         }
 

@@ -16,20 +16,13 @@ namespace CasCap.Services;
 /// no messaging-transport types and never logs audio bytes or transcripts. Note that this is the only provider
 /// that sends audio outside the local network.
 /// </remarks>
-public sealed partial class AzureSpeechToTextClient : ISpeechToTextClient
+public sealed partial class AzureSpeechToTextClient(
+    ILogger<AzureSpeechToTextClient> logger,
+    ISpeechService speechService,
+    IOptions<SpeechToTextConfig> options) : ISpeechToTextClient
 {
-    private readonly ILogger<AzureSpeechToTextClient> _logger;
-    private readonly ISpeechService _speechService;
-    private readonly IOptions<SpeechToTextConfig> _options;
+    private IOptions<SpeechToTextConfig> ConfigOptions => options;
 
-    /// <summary>Initializes a new instance of the <see cref="AzureSpeechToTextClient"/> class.</summary>
-    public AzureSpeechToTextClient(ILogger<AzureSpeechToTextClient> logger, ISpeechService speechService,
-        IOptions<SpeechToTextConfig> options)
-    {
-        _logger = logger;
-        _speechService = speechService;
-        _options = options;
-    }
 
     /// <inheritdoc/>
     public async Task<SpeechToTextResponse> GetTextAsync(Stream audioSpeechStream,
@@ -39,28 +32,28 @@ public sealed partial class AzureSpeechToTextClient : ISpeechToTextClient
 
         //An explicit locale improves accuracy and latency; with none the multilingual model identifies
         //  the language itself, which is what lets one configuration serve English and German.
-        var locales = ResolveLocales(options, _options.Value);
+        var locales = ResolveLocales(options, ConfigOptions.Value);
         string? text;
         try
         {
-            text = await _speechService.TranscribeAsync(audioSpeechStream, locales, cancellationToken);
+            text = await speechService.TranscribeAsync(audioSpeechStream, locales, cancellationToken);
         }
         catch (ClientResultException ex)
         {
             //Normalised to the exception the pipeline already handles, so a backend failure reaches the
             //  sender as a rejection instead of aborting the receive loop.
-            LogTranscriptionRejected(_logger, ex.Status);
+            LogTranscriptionRejected(logger, ex.Status);
             throw new HttpRequestException(
                 $"{nameof(AzureSpeechToTextClient)} transcription request failed, StatusCode={ex.Status}.",
                 ex, (HttpStatusCode)ex.Status);
         }
 
         if (text is null)
-            LogNoSpeechRecognized(_logger);
+            LogNoSpeechRecognized(logger);
 
         return new SpeechToTextResponse(text ?? string.Empty)
         {
-            ModelId = options?.ModelId ?? _options.Value.ModelId,
+            ModelId = options?.ModelId ?? ConfigOptions.Value.ModelId,
         };
     }
 
