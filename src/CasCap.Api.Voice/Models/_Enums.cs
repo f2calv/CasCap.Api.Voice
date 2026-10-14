@@ -147,3 +147,25 @@ public enum VoiceTranscriptionOutcome
     /// <summary>The backend responded successfully but produced no usable text.</summary>
     EmptyTranscript,
 }
+
+/// <summary>The terminal outcome of a spoken-reply synthesis attempt.</summary>
+public enum VoiceSynthesisOutcome
+{
+    /// <summary>Audio was produced.</summary>
+    Success,
+
+    /// <summary>Policy declined: the mode is disabled, the inbound message was not voice, or there is nothing to say.</summary>
+    Skipped,
+
+    /// <summary>The speakable reply exceeded the configured maximum length.</summary>
+    TooLong,
+
+    /// <summary>The backend responded but returned no audio.</summary>
+    NoAudio,
+
+    /// <summary>The configured time budget elapsed before audio was produced.</summary>
+    TimedOut,
+
+    /// <summary>The backend was unreachable or returned an error.</summary>
+    BackendFailed,
+}

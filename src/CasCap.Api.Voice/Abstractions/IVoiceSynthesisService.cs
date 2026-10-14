@@ -7,8 +7,11 @@ public interface IVoiceSynthesisService
     /// <param name="text">Response text to speak.</param>
     /// <param name="inboundWasVoice">Whether the triggering request contained voice audio.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>Encoded audio and metadata, or <see langword="null"/> when synthesis is skipped or fails.</returns>
-    public Task<VoiceSynthesisResult?> TrySynthesizeAsync(
+    /// <returns>
+    /// The typed outcome, carrying audio only when it is <see cref="VoiceSynthesisOutcome.Success"/>. Failures are
+    /// contained and reported through the outcome rather than thrown.
+    /// </returns>
+    public Task<VoiceSynthesisResult> TrySynthesizeAsync(
         string? text,
         bool inboundWasVoice,
         CancellationToken cancellationToken = default);

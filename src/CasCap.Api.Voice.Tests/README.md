@@ -8,7 +8,7 @@ default local run.
 
 | Area | Methods | Cases |
 | --- | ---: | ---: |
-| Unit | 25 | 45 |
+| Unit | 26 | 46 |
 | Integration | 4 | 4 |
 
 ## Trait Categories

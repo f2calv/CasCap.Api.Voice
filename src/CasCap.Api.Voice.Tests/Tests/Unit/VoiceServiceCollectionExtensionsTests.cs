@@ -64,10 +64,10 @@ public sealed class VoiceServiceCollectionExtensionsTests
 
     private sealed class CustomSynthesisService : IVoiceSynthesisService
     {
-        public Task<VoiceSynthesisResult?> TrySynthesizeAsync(
+        public Task<VoiceSynthesisResult> TrySynthesizeAsync(
             string? text,
             bool inboundWasVoice,
             CancellationToken cancellationToken = default) =>
-            Task.FromResult<VoiceSynthesisResult?>(null);
+            Task.FromResult(VoiceSynthesisResult.Skipped);
     }
 }

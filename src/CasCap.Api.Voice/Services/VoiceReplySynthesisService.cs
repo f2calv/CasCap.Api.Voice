@@ -28,28 +28,28 @@ public sealed partial class VoiceReplySynthesisService(
     /// </param>
     /// <param name="inboundWasVoice">Whether the message being replied to carried audio.</param>
     /// <param name="cancellationToken">Token observed alongside the configured time budget.</param>
-    /// <returns>A typed audio result, or <see langword="null"/> when policy declines or synthesis fails.</returns>
-    public async Task<VoiceSynthesisResult?> TrySynthesizeAsync(string? text, bool inboundWasVoice,
+    /// <returns>The typed outcome, carrying audio only on success.</returns>
+    public async Task<VoiceSynthesisResult> TrySynthesizeAsync(string? text, bool inboundWasVoice,
         CancellationToken cancellationToken = default)
     {
         var config = options.Value;
 
         if (config.Mode is VoiceReplyMode.Disabled)
-            return null;
+            return VoiceSynthesisResult.Skipped;
         if (config.Mode is VoiceReplyMode.MatchInbound && !inboundWasVoice)
-            return null;
+            return VoiceSynthesisResult.Skipped;
         if (string.IsNullOrWhiteSpace(text))
-            return null;
+            return VoiceSynthesisResult.Skipped;
 
         //Markdown is read out literally, so structure becomes punctuation before anything is spoken.
         var speakable = SpeechTextNormalizer.ToSpeakable(text);
         if (speakable.Length == 0)
-            return null;
+            return VoiceSynthesisResult.Skipped;
 
         if (speakable.Length > config.MaxCharacters)
         {
             LogReplyTooLong(logger, speakable.Length, config.MaxCharacters);
-            return null;
+            return VoiceSynthesisResult.Failure(VoiceSynthesisOutcome.TooLong, config.Provider);
         }
 
         try
@@ -65,22 +65,23 @@ public sealed partial class VoiceReplySynthesisService(
             if (audio is null || audio.Data.Length == 0)
             {
                 LogNoAudioReturned(logger, config.Provider.ToString());
-                return null;
+                return VoiceSynthesisResult.Failure(VoiceSynthesisOutcome.NoAudio, config.Provider);
             }
 
             var mediaType = audio.MediaType ?? AzureSpeechTextToSpeechClient.OggOpusMediaType;
             LogReplySynthesized(logger, config.Provider.ToString(), speakable.Length, audio.Data.Length, elapsed);
-            return new VoiceSynthesisResult(audio.Data, mediaType, AttachmentFileName);
+            return VoiceSynthesisResult.Success(audio.Data, mediaType, AttachmentFileName, config.Provider);
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
             LogSynthesisTimedOut(logger, config.TimeoutMs);
-            return null;
+            return VoiceSynthesisResult.Failure(VoiceSynthesisOutcome.TimedOut, config.Provider);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
         {
             LogSynthesisFailed(logger, ex, config.Provider.ToString());
-            return null;
+            return VoiceSynthesisResult.Failure(VoiceSynthesisOutcome.BackendFailed, config.Provider,
+                $"{ex.GetType().Name}: {ex.Message}");
         }
     }
 
