@@ -26,6 +26,9 @@ Options bind from `CasCap:SpeechToTextConfig`, `CasCap:TextToSpeechConfig`, and
 `CasCap:VoiceMetricsConfig`. `VoiceMetricsConfig:MetricNamePrefix` defaults to `voice` and should be
 set by a host when its telemetry naming convention requires another prefix.
 
+While `TextToSpeechConfig:Mode` is `Disabled`, the default `ITextToSpeechClient` is a stand-in that
+needs no provider endpoint or credential, so a host can register the pipeline before choosing a provider.
+
 ## Dependencies
 
 The project uses Microsoft.Extensions.AI abstractions, shared CasCap configuration/extensions/services,

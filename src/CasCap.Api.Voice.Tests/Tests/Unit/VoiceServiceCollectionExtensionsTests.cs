@@ -53,6 +53,23 @@ public sealed class VoiceServiceCollectionExtensionsTests
         Assert.Equal(typeof(CustomSynthesisService), descriptor.ImplementationType);
     }
 
+    [Fact]
+    public async Task AddTextToSpeech_DisabledModeNeedsNoProviderConfiguration()
+    {
+        //The default provider is Azure AI Speech, which otherwise demands an endpoint and credential on resolution.
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSingleton<Microsoft.Extensions.Configuration.IConfiguration>(
+            new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build());
+        services.AddTextToSpeech();
+        await using var provider = services.BuildServiceProvider();
+
+        var result = await provider.GetRequiredService<IVoiceSynthesisService>()
+            .TrySynthesizeAsync("hallo", inboundWasVoice: true, TestContext.Current.CancellationToken);
+
+        Assert.Equal(VoiceSynthesisOutcome.Skipped, result.Outcome);
+    }
+
     private sealed class CustomTranscriptionService : IVoiceTranscriptionService
     {
         public Task<VoiceTranscriptionResult> Transcribe(

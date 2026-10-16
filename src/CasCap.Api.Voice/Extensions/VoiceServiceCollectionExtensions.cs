@@ -46,7 +46,11 @@ public static class VoiceServiceCollectionExtensions
 #pragma warning disable MEAI001
         services.TryAddSingleton<ITextToSpeechClient>(sp =>
         {
-            var provider = sp.GetRequiredService<IOptions<TextToSpeechConfig>>().Value.Provider;
+            var config = sp.GetRequiredService<IOptions<TextToSpeechConfig>>().Value;
+            if (config.Mode is VoiceReplyMode.Disabled)
+                return new DisabledTextToSpeechClient();
+
+            var provider = config.Provider;
             return provider switch
             {
                 TextToSpeechProvider.AzureOpenAi =>
