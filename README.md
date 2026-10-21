@@ -1,46 +1,62 @@
 # CasCap.Api.Voice
 
-Provider-neutral speech-to-text and text-to-speech components for .NET applications.
+Speech-to-text and text-to-speech libraries for .NET 10 applications, with interchangeable Whisper,
+Azure AI Speech, Azure OpenAI and Piper adapters. Validate and normalize audio, transcribe it or
+synthesize spoken replies without coupling the application to a messaging transport.
 
-## Status
+## Packages
 
-The library is published as the `CasCap.Api.Voice` NuGet package. Its provider-neutral contract is
-shared by applications that need speech processing without taking a messaging dependency.
+| Package | Purpose | NuGet |
+| --- | --- | --- |
+| [CasCap.Api.Voice](src/CasCap.Api.Voice/README.md) | Provider adapters, bounded transcription and spoken-reply policy | [![NuGet version](https://img.shields.io/nuget/v/CasCap.Api.Voice)](https://www.nuget.org/packages/CasCap.Api.Voice) |
+| [CasCap.Api.Voice.Testing](src/CasCap.Api.Voice.Testing/README.md) | Canned provider clients for consumer tests | [![NuGet version](https://img.shields.io/nuget/v/CasCap.Api.Voice.Testing)](https://www.nuget.org/packages/CasCap.Api.Voice.Testing) |
 
-The companion [`CasCap.Api.Voice.Testing`](src/CasCap.Api.Voice.Testing/README.md) package
-provides canned speech-to-text and text-to-speech clients for consumers' test projects.
+## Quick Start
 
-## Installation
+In a .NET 10 Generic Host application:
+
+The application-facing contracts are
+[`IVoiceTranscriptionService`](src/CasCap.Api.Voice/Abstractions/IVoiceTranscriptionService.cs) and
+[`IVoiceSynthesisService`](src/CasCap.Api.Voice/Abstractions/IVoiceSynthesisService.cs).
 
 ```powershell
 dotnet package add CasCap.Api.Voice
-dotnet package add CasCap.Api.Voice.Testing # test projects only
 ```
 
-## Public Surface
+The default transcription adapter expects an openai-whisper-asr-webservice backend at
+`http://localhost:9000`. With that backend available and a local 16 kHz mono signed 16-bit PCM WAV file:
 
-The library provides:
+```csharp
+using CasCap.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-- speech-to-text adapters for openai-whisper-asr-webservice, whisper.cpp, and Azure AI Speech;
-- text-to-speech adapters for Azure AI Speech, Azure OpenAI, and Piper over Wyoming;
-- bounded media validation and normalization to 16 kHz mono PCM WAV;
-- transport-neutral transcription and synthesis results;
-- stable application-facing transcription and synthesis interfaces;
-- OpenTelemetry-compatible voice metrics; and
-- dependency-injection registration through `AddSpeechToText` and `AddTextToSpeech`.
+var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddSpeechToText();
+
+using var host = builder.Build();
+var voice = host.Services.GetRequiredService<IVoiceTranscriptionService>();
+var result = await voice.Transcribe(
+    await File.ReadAllBytesAsync("input.wav"), "audio/wav");
+
+Console.WriteLine(result.Outcome);
+```
+
+Read `result.Text` only when `result.TranscriptAvailable` is true. Audio is sent to the configured
+backend; keep recordings and transcripts out of source control and routine logs.
 
 ## Configuration
 
-Configuration binds from `CasCap:SpeechToTextConfig`, `CasCap:TextToSpeechConfig`, and
-`CasCap:VoiceMetricsConfig`. Provider endpoints and credentials belong in environment variables,
-.NET User Secrets, or another secret-backed provider rather than tracked configuration.
+Options bind from `CasCap:SpeechToTextConfig`, `CasCap:TextToSpeechConfig` and
+`CasCap:VoiceMetricsConfig`. Register synthesis separately with `AddTextToSpeech()`;
+spoken replies are disabled by default.
 
-## Dependencies
+See the [core package README](src/CasCap.Api.Voice/README.md#configuration-examples) for provider
+settings, processing limits, synthesis usage and the distinction between host-controlled voice modes
+and direct transcription calls. Supply real endpoints and credentials through secret-backed
+configuration, not tracked examples.
 
-Development builds use adjacent source checkouts for shared CasCap libraries. Release builds and the
-published package use their exact NuGet package equivalents.
-
-### Runtime and Container Dependencies
+## Runtime Requirements
 
 The library does not require Docker and does not publish a container image. A consuming application
 is responsible for installing native tools in its runtime image and providing network access to the
@@ -56,8 +72,7 @@ selected speech backend.
 | Azure AI Speech | Azure endpoint and token credential | An Azure Speech provider is selected |
 | Azure OpenAI speech | Azure OpenAI endpoint, deployment, API version, and token credential | `TextToSpeechProvider.AzureOpenAi` is selected |
 
-For Debian or Ubuntu-based application images, install ffmpeg in the final runtime stage and remove
-the package-manager cache in the same layer:
+For Debian or Ubuntu application images, install ffmpeg in the final runtime stage:
 
 ```dockerfile
 RUN apt-get update \
@@ -67,9 +82,8 @@ RUN apt-get update \
 && rm -rf /var/lib/apt/lists/*
 ```
 
-The `ffmpeg -version` check catches a missing executable during the image build. The encoder check is
-required for Piper because Piper returns raw PCM and the adapter produces Ogg Opus. A minimal or
-custom ffmpeg build may omit `libopus` even when the executable itself is present.
+Piper returns raw PCM and the adapter produces Ogg Opus. The encoder check catches ffmpeg builds that
+omit `libopus`, even when the executable is present.
 
 Set `SpeechToTextConfig.FfmpegPath` and `TextToSpeechConfig.FfmpegPath` when the executable is not
 available as `ffmpeg` on `PATH`. The library pipes media through standard input and output and does
@@ -77,11 +91,14 @@ not require writable temporary-file storage.
 
 ## Development
 
-Open the repository in its Dev Container for .NET 10, PowerShell, pre-commit, and an ffmpeg build
-that includes the `libopus` encoder. Container creation restores the standalone Release solution but
-does not install Git hooks automatically.
+Use the .NET 10 SDK. The Release solution consumes published cross-repository dependencies and can be
+built from this checkout alone:
 
-Build the Debug solution:
+```powershell
+dotnet build CasCap.Api.Voice.Release.slnx --configuration Release
+```
+
+The Debug solution substitutes adjacent source checkouts for the shared CasCap libraries:
 
 ```powershell
 dotnet build CasCap.Api.Voice.Debug.slnx --configuration Debug
@@ -93,15 +110,10 @@ Run the credential-free unit tests:
 dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --framework net10.0 --filter-not-trait Category=Integration
 ```
 
-Integration tests requiring external speech services are explicitly categorized and excluded from
-that command.
-
-Run all repository lint hooks manually:
-
-```bash
-pre-commit run --all-files
-```
+The [test README](src/CasCap.Api.Voice.Tests/README.md) lists source-declared cases, prerequisites and
+skip behavior. The four integration-designated cases are explicitly disabled even when endpoints
+are configured; they do not currently exercise live providers.
 
 ## License
 
-This project is released under the [Unlicense](LICENSE).
+This project is released under the [MIT License](LICENSE).

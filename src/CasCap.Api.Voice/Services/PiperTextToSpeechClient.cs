@@ -23,17 +23,12 @@ namespace CasCap.Services;
 /// requested from the server, which keeps the adapter contract identical to the cloud providers.
 /// </para>
 /// </remarks>
-public sealed partial class PiperTextToSpeechClient : ITextToSpeechClient
+public sealed partial class PiperTextToSpeechClient(
+    ILogger<PiperTextToSpeechClient> logger,
+    IOptions<TextToSpeechConfig> options) : ITextToSpeechClient
 {
-    private readonly ILogger<PiperTextToSpeechClient> _logger;
-    private readonly IOptions<TextToSpeechConfig> _options;
+    private IOptions<TextToSpeechConfig> ConfigOptions => options;
 
-    /// <summary>Initializes a new instance of the <see cref="PiperTextToSpeechClient"/> class.</summary>
-    public PiperTextToSpeechClient(ILogger<PiperTextToSpeechClient> logger, IOptions<TextToSpeechConfig> options)
-    {
-        _logger = logger;
-        _options = options;
-    }
 
     /// <summary>Port the Wyoming protocol listens on when the endpoint omits one.</summary>
     public const int DefaultPort = 10200;
@@ -47,7 +42,7 @@ public sealed partial class PiperTextToSpeechClient : ITextToSpeechClient
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
-        var config = _options.Value;
+        var config = ConfigOptions.Value;
         var endpoint = config.PiperEndpoint
             ?? throw new InvalidOperationException(
                 $"{nameof(TextToSpeechConfig)}.{nameof(TextToSpeechConfig.PiperEndpoint)} is required when " +
@@ -59,7 +54,7 @@ public sealed partial class PiperTextToSpeechClient : ITextToSpeechClient
         var (pcm, rate, width, channels) = await SynthesizeAsync(host, port, text, voice, cancellationToken);
         if (pcm.Length == 0)
         {
-            LogNoAudioReturned(_logger, host, port);
+            LogNoAudioReturned(logger, host, port);
             return new TextToSpeechResponse();
         }
 
@@ -221,14 +216,14 @@ public sealed partial class PiperTextToSpeechClient : ITextToSpeechClient
         //The two failures need telling apart: one is a missing binary, the other a bad stream.
         if (result.ExitCode == -1)
         {
-            LogFfmpegUnavailable(_logger, ffmpegPath);
+            LogFfmpegUnavailable(logger, ffmpegPath);
             throw new InvalidOperationException(
                 $"{nameof(PiperTextToSpeechClient)} could not start ffmpeg at '{ffmpegPath}'. "
                 + $"{nameof(TextToSpeechProvider.Piper)} emits raw PCM and needs it to encode Opus.");
         }
         if (!result.Success || result.Output.Length == 0)
         {
-            LogEncodingFailed(_logger, result.ExitCode, result.ErrorLength);
+            LogEncodingFailed(logger, result.ExitCode, result.ErrorLength);
             throw new InvalidOperationException(
                 $"{nameof(PiperTextToSpeechClient)} failed to encode {pcm.Length} PCM bytes to Opus, "
                 + $"ExitCode={result.ExitCode}. The build may lack libopus.");

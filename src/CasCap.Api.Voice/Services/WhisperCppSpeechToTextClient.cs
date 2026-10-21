@@ -17,17 +17,14 @@ namespace CasCap.Services;
 /// mode of <see cref="WhisperAsrSpeechToTextClient"/>. The adapter carries no messaging-transport types or
 /// deployment coordinates, and never logs multipart bodies, part filenames, audio bytes or transcripts.
 /// </remarks>
-public sealed partial class WhisperCppSpeechToTextClient : HttpClientBase, ISpeechToTextClient
+public sealed partial class WhisperCppSpeechToTextClient(
+    ILogger<WhisperCppSpeechToTextClient> logger,
+    IOptions<SpeechToTextConfig> options,
+    IHttpClientFactory httpClientFactory)
+    : HttpClientBase(logger, httpClientFactory.CreateClient(HttpClientName)), ISpeechToTextClient
 {
-    private readonly IOptions<SpeechToTextConfig> _options;
+    private IOptions<SpeechToTextConfig> ConfigOptions => options;
 
-    /// <summary>Initializes a new instance of the <see cref="WhisperCppSpeechToTextClient"/> class.</summary>
-    public WhisperCppSpeechToTextClient(ILogger<WhisperCppSpeechToTextClient> logger,
-        IOptions<SpeechToTextConfig> options, IHttpClientFactory httpClientFactory)
-        : base(logger, httpClientFactory.CreateClient(HttpClientName))
-    {
-        _options = options;
-    }
 
     /// <summary>The named <see cref="HttpClient"/> registration this adapter resolves.</summary>
     public const string HttpClientName = nameof(WhisperCppSpeechToTextClient);
@@ -48,11 +45,11 @@ public sealed partial class WhisperCppSpeechToTextClient : HttpClientBase, ISpee
     {
         ArgumentNullException.ThrowIfNull(audioSpeechStream);
 
-        var endpoint = _options.Value.WhisperCppEndpoint
+        var endpoint = ConfigOptions.Value.WhisperCppEndpoint
             ?? throw new InvalidOperationException(
                 $"{nameof(SpeechToTextConfig)}.{nameof(SpeechToTextConfig.WhisperCppEndpoint)} is required when " +
                 $"{nameof(SpeechToTextProvider.WhisperCpp)} is the selected provider.");
-        var language = options?.SpeechLanguage ?? _options.Value.Language;
+        var language = options?.SpeechLanguage ?? ConfigOptions.Value.Language;
 
         using var content = new MultipartFormDataContent();
         var file = new StreamContent(audioSpeechStream);
@@ -80,7 +77,7 @@ public sealed partial class WhisperCppSpeechToTextClient : HttpClientBase, ISpee
 
         return new SpeechToTextResponse(result.Text ?? string.Empty)
         {
-            ModelId = options?.ModelId ?? _options.Value.ModelId,
+            ModelId = options?.ModelId ?? ConfigOptions.Value.ModelId,
             RawRepresentation = result,
         };
     }

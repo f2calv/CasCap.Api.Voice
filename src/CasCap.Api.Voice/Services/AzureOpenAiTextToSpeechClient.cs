@@ -17,20 +17,15 @@ namespace CasCap.Services;
 /// OpenAI-compatible self-hosted servers too, so this adapter should extend to those with only an
 /// endpoint and an authentication change. The adapter never logs the text it speaks.
 /// </remarks>
-public sealed partial class AzureOpenAiTextToSpeechClient : HttpClientBase, ITextToSpeechClient
+public sealed partial class AzureOpenAiTextToSpeechClient(
+    ILogger<AzureOpenAiTextToSpeechClient> logger,
+    IOptions<TextToSpeechConfig> options,
+    IOptions<AzureAuthConfig> authOptions,
+    IHttpClientFactory httpClientFactory)
+    : HttpClientBase(logger, httpClientFactory.CreateClient(HttpClientName)), ITextToSpeechClient
 {
-    private readonly IOptions<TextToSpeechConfig> _options;
-    private readonly IOptions<AzureAuthConfig> _authOptions;
+    private IOptions<TextToSpeechConfig> ConfigOptions => options;
 
-    /// <summary>Initializes a new instance of the <see cref="AzureOpenAiTextToSpeechClient"/> class.</summary>
-    public AzureOpenAiTextToSpeechClient(ILogger<AzureOpenAiTextToSpeechClient> logger,
-        IOptions<TextToSpeechConfig> options, IOptions<AzureAuthConfig> authOptions,
-        IHttpClientFactory httpClientFactory)
-        : base(logger, httpClientFactory.CreateClient(HttpClientName))
-    {
-        _options = options;
-        _authOptions = authOptions;
-    }
 
     /// <summary>The named <see cref="HttpClient"/> registration this adapter resolves.</summary>
     public const string HttpClientName = nameof(AzureOpenAiTextToSpeechClient);
@@ -50,7 +45,7 @@ public sealed partial class AzureOpenAiTextToSpeechClient : HttpClientBase, ITex
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
-        var config = _options.Value;
+        var config = ConfigOptions.Value;
         var endpoint = config.AzureOpenAiEndpoint
             ?? throw new InvalidOperationException(
                 $"{nameof(TextToSpeechConfig)}.{nameof(TextToSpeechConfig.AzureOpenAiEndpoint)} is required when " +
@@ -59,7 +54,7 @@ public sealed partial class AzureOpenAiTextToSpeechClient : HttpClientBase, ITex
             ?? throw new InvalidOperationException(
                 $"{nameof(TextToSpeechConfig)}.{nameof(TextToSpeechConfig.AzureOpenAiDeployment)} is required when " +
                 $"{nameof(TextToSpeechProvider.AzureOpenAi)} is the selected provider.");
-        var credential = _authOptions.Value.TokenCredential
+        var credential = authOptions.Value.TokenCredential
             ?? throw new InvalidOperationException(
                 $"{nameof(AzureAuthConfig)}.{nameof(AzureAuthConfig.TokenCredential)} is required when " +
                 $"{nameof(TextToSpeechProvider.AzureOpenAi)} is the selected provider.");

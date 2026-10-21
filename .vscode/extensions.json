@@ -1,10 +1,12 @@
 {
-    "recommendations": [
-        "DavidAnson.vscode-markdownlint",
-        "github.vscode-github-actions",
-        "ms-azuretools.vscode-containers",
-        "ms-dotnettools.csdevkit",
-        "ms-vscode.powershell",
-        "redhat.vscode-yaml"
-    ]
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "DavidAnson.vscode-markdownlint",
+    "github.vscode-github-actions",
+    "ms-azuretools.vscode-containers",
+    "ms-dotnettools.csdevkit",
+    "ms-vscode.powershell",
+    "redhat.vscode-yaml"
+  ]
 }
