@@ -66,7 +66,7 @@ public sealed partial class AzureSpeechTextToSpeechClient(
     #region Private helpers
 
     //The character count is safe to log; the text itself is a reply that may quote household detail.
-    [LoggerMessage(LogLevel.Warning, "{ClassName} synthesized no audio for {CharacterCount} characters")]
+    [LoggerMessage(LogLevel.Debug, "{ClassName} synthesized no audio for {CharacterCount} characters")]
     private static partial void LogNoAudioSynthesized(ILogger logger, int characterCount,
         string className = nameof(AzureSpeechTextToSpeechClient));
 

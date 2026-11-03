@@ -96,11 +96,11 @@ public sealed partial class AzureSpeechToTextClient(
         return !string.IsNullOrWhiteSpace(language) && language.Contains('-') ? [language] : null;
     }
 
-    [LoggerMessage(LogLevel.Warning, "{ClassName} recognized no speech in the supplied audio")]
+    [LoggerMessage(LogLevel.Debug, "{ClassName} recognized no speech in the supplied audio")]
     private static partial void LogNoSpeechRecognized(ILogger logger,
         string className = nameof(AzureSpeechToTextClient));
 
-    [LoggerMessage(LogLevel.Error, "{ClassName} transcription request was rejected, StatusCode={StatusCode}")]
+    [LoggerMessage(LogLevel.Debug, "{ClassName} transcription request was rejected, StatusCode={StatusCode}")]
     private static partial void LogTranscriptionRejected(ILogger logger, int statusCode,
         string className = nameof(AzureSpeechToTextClient));
 

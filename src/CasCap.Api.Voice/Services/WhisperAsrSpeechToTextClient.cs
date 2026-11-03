@@ -148,11 +148,11 @@ public sealed partial class WhisperAsrSpeechToTextClient(
         _ => "audio.bin"
     };
 
-    [LoggerMessage(LogLevel.Error, "{ClassName} transcription request was rejected, StatusCode={StatusCode}")]
+    [LoggerMessage(LogLevel.Debug, "{ClassName} transcription request was rejected, StatusCode={StatusCode}")]
     private static partial void LogTranscriptionRejected(ILogger logger, int statusCode,
         string className = nameof(WhisperAsrSpeechToTextClient));
 
-    [LoggerMessage(LogLevel.Warning, "{ClassName} transcription backend is unavailable, StatusCode={StatusCode}")]
+    [LoggerMessage(LogLevel.Debug, "{ClassName} transcription backend is unavailable, StatusCode={StatusCode}")]
     private static partial void LogTranscriptionUnavailable(ILogger logger, int statusCode,
         string className = nameof(WhisperAsrSpeechToTextClient));
 
