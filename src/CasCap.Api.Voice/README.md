@@ -176,6 +176,13 @@ The transcription meter is named by `MetricNamePrefix`. Instruments use
 transcoding and transcription. Dimensions are bounded provider/outcome values, not media names,
 recordings or transcripts. Exporter registration belongs to the consuming host.
 
+Logs carry sizes, durations, counts, status codes and outcomes, never audio, transcripts, reply text
+or local paths. Each transcription or synthesis logs once at the pipeline boundary: Information on
+success, Warning for a rejected, timed-out or empty result (an over-long reply is skipped at Debug)
+and Error for a backend failure; a missing ffmpeg binary adds one Error. Provider adapters log their
+own rejections, empty results and encoding failures only at Debug, because the pipeline or the
+caller already reports the thrown exception or empty response.
+
 Provider adapters implement Microsoft.Extensions.AI
 [`ISpeechToTextClient`](https://github.com/dotnet/extensions/blob/main/src/Libraries/Microsoft.Extensions.AI.Abstractions/SpeechToText/ISpeechToTextClient.cs)
 and [`ITextToSpeechClient`](https://github.com/dotnet/extensions/blob/main/src/Libraries/Microsoft.Extensions.AI.Abstractions/TextToSpeech/ITextToSpeechClient.cs).
