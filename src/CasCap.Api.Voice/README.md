@@ -155,19 +155,25 @@ secret-backed configuration.
 
 ## Data Flow
 
+The two pipelines are independent; the host decides whether a transcript should lead to a reply.
+The [package dependency graph](https://github.com/f2calv/CasCap.Api.Voice/blob/main/README.md#dependency-graph)
+shows which shared libraries support these providers.
+
 ```mermaid
 flowchart LR
-    Audio["Encoded audio"] --> Validate["Validate type, signature and size"]
-    Validate --> Normalize["Normalize WAV if needed"]
-    Normalize --> Limits["Check decoded size and duration"]
-    Limits --> STT["Selected speech-to-text provider"]
-    STT --> Transcript["Typed transcription result"]
-    Text["Reply text"] --> Policy["Reply mode and length policy"]
-    Policy --> TTS["Selected text-to-speech provider"]
-    TTS --> Result["Typed synthesis result"]
+  audio([Encoded audio]) --> validate[Validate type, signature and size]
+  validate --> normalize[Normalize WAV if needed]
+  normalize --> limits[Check decoded size and duration]
+  limits --> stt[Selected speech-to-text provider]
+  stt --> transcript([Typed transcription result])
+  text([Reply text]) --> policy[Reply mode and length policy]
+  policy --> tts[Selected text-to-speech provider]
+  tts --> result([Typed synthesis result])
+  classDef owned fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a
+  classDef terminal fill:#dcfce7,stroke:#15803d,color:#14532d
+  class validate,normalize,limits,stt,policy,tts owned
+  class audio,transcript,text,result terminal
 ```
-
-The two pipelines are independent; the host decides whether a transcript should lead to a reply.
 
 ## Diagnostics and Testing
 
