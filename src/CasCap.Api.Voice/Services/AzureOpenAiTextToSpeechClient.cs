@@ -133,15 +133,15 @@ public sealed partial class AzureOpenAiTextToSpeechClient(
 
     #region Private helpers
 
-    [LoggerMessage(LogLevel.Error, "{ClassName} synthesis request was rejected, StatusCode={StatusCode}")]
+    [LoggerMessage(LogLevel.Debug, "{ClassName} synthesis request was rejected, StatusCode={StatusCode}")]
     private static partial void LogSynthesisRejected(ILogger logger, int statusCode,
         string className = nameof(AzureOpenAiTextToSpeechClient));
 
-    [LoggerMessage(LogLevel.Warning, "{ClassName} synthesis backend is unavailable, StatusCode={StatusCode}")]
+    [LoggerMessage(LogLevel.Debug, "{ClassName} synthesis backend is unavailable, StatusCode={StatusCode}")]
     private static partial void LogSynthesisUnavailable(ILogger logger, int statusCode,
         string className = nameof(AzureOpenAiTextToSpeechClient));
 
-    [LoggerMessage(LogLevel.Warning, "{ClassName} synthesized no audio for {CharacterCount} characters")]
+    [LoggerMessage(LogLevel.Debug, "{ClassName} synthesized no audio for {CharacterCount} characters")]
     private static partial void LogNoAudioSynthesized(ILogger logger, int characterCount,
         string className = nameof(AzureOpenAiTextToSpeechClient));
 

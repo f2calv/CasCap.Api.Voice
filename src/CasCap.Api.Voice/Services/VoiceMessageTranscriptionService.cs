@@ -306,7 +306,7 @@ public sealed partial class VoiceMessageTranscriptionService(
     private static partial void LogBackendFaulted(ILogger logger, Exception exception,
         string className = nameof(VoiceMessageTranscriptionService));
 
-    [LoggerMessage(LogLevel.Error,
+    [LoggerMessage(LogLevel.Debug,
         "{ClassName} ffmpeg conversion failed, exitCode={ExitCode}, outputBytes={OutputBytes}, errorChars={ErrorChars}")]
     private static partial void LogConversionFailed(ILogger logger, int exitCode, int outputBytes, int errorChars,
         string className = nameof(VoiceMessageTranscriptionService));

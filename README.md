@@ -11,6 +11,31 @@ synthesize spoken replies without coupling the application to a messaging transp
 | [CasCap.Api.Voice](src/CasCap.Api.Voice/README.md) | Provider adapters, bounded transcription and spoken-reply policy | [![NuGet version](https://img.shields.io/nuget/v/CasCap.Api.Voice)](https://www.nuget.org/packages/CasCap.Api.Voice) |
 | [CasCap.Api.Voice.Testing](src/CasCap.Api.Voice.Testing/README.md) | Canned provider clients for consumer tests | [![NuGet version](https://img.shields.io/nuget/v/CasCap.Api.Voice.Testing)](https://www.nuget.org/packages/CasCap.Api.Voice.Testing) |
 
+## Dependency Graph
+
+The Testing package references the core Voice package. The remaining arrows show the core package's
+direct runtime references in Release; Debug substitutes sibling sources for the CasCap dependencies.
+See the [voice pipelines](src/CasCap.Api.Voice/README.md#data-flow) for audio processing behavior.
+
+```mermaid
+graph TD
+  testing([CasCap.Api.Voice.Testing]) --> voice([CasCap.Api.Voice])
+  voice --> auth[CasCap.Api.Azure.Auth]
+  voice --> cognitive[CasCap.Api.Azure.CognitiveServices]
+  voice --> abstractions[CasCap.Common.Abstractions]
+  voice --> configuration[CasCap.Common.Configuration]
+  voice --> extensions[CasCap.Common.Extensions]
+  voice --> net[CasCap.Common.Net]
+  voice --> services[CasCap.Common.Services]
+  voice --> ai[Microsoft.Extensions.AI]
+  voice --> di[Microsoft.Extensions.DependencyInjection]
+  voice --> http[Microsoft.Extensions.Http]
+  classDef owned fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a
+  classDef published fill:#dcfce7,stroke:#15803d,color:#14532d
+  class testing,voice owned
+  class auth,cognitive,abstractions,configuration,extensions,net,services,ai,di,http published
+```
+
 ## Quick Start
 
 In a .NET 10 Generic Host application:
@@ -107,7 +132,7 @@ dotnet build CasCap.Api.Voice.Debug.slnx --configuration Debug
 Run the credential-free unit tests:
 
 ```powershell
-dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --framework net10.0 --filter-not-trait Category=Integration
+dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net10.0 --filter-not-trait Category=Integration
 ```
 
 The [test README](src/CasCap.Api.Voice.Tests/README.md) lists source-declared cases, prerequisites and

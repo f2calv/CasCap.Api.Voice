@@ -10,6 +10,8 @@ dotnet package add CasCap.Api.Voice.Testing
 ```
 
 Reference it from test projects only.
+Its only direct package dependency is the core Voice package; see the
+[package dependency graph](https://github.com/f2calv/CasCap.Api.Voice/blob/main/README.md#dependency-graph).
 
 ## Test Clients
 

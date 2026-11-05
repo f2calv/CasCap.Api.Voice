@@ -155,19 +155,25 @@ secret-backed configuration.
 
 ## Data Flow
 
+The two pipelines are independent; the host decides whether a transcript should lead to a reply.
+The [package dependency graph](https://github.com/f2calv/CasCap.Api.Voice/blob/main/README.md#dependency-graph)
+shows which shared libraries support these providers.
+
 ```mermaid
 flowchart LR
-    Audio["Encoded audio"] --> Validate["Validate type, signature and size"]
-    Validate --> Normalize["Normalize WAV if needed"]
-    Normalize --> Limits["Check decoded size and duration"]
-    Limits --> STT["Selected speech-to-text provider"]
-    STT --> Transcript["Typed transcription result"]
-    Text["Reply text"] --> Policy["Reply mode and length policy"]
-    Policy --> TTS["Selected text-to-speech provider"]
-    TTS --> Result["Typed synthesis result"]
+  audio([Encoded audio]) --> validate[Validate type, signature and size]
+  validate --> normalize[Normalize WAV if needed]
+  normalize --> limits[Check decoded size and duration]
+  limits --> stt[Selected speech-to-text provider]
+  stt --> transcript([Typed transcription result])
+  text([Reply text]) --> policy[Reply mode and length policy]
+  policy --> tts[Selected text-to-speech provider]
+  tts --> result([Typed synthesis result])
+  classDef owned fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a
+  classDef terminal fill:#dcfce7,stroke:#15803d,color:#14532d
+  class validate,normalize,limits,stt,policy,tts owned
+  class audio,transcript,text,result terminal
 ```
-
-The two pipelines are independent; the host decides whether a transcript should lead to a reply.
 
 ## Diagnostics and Testing
 
@@ -175,6 +181,13 @@ The transcription meter is named by `MetricNamePrefix`. Instruments use
 `<prefix>.voice.transcriptions`, `<prefix>.voice.audio.duration`, and duration/speed measurements for
 transcoding and transcription. Dimensions are bounded provider/outcome values, not media names,
 recordings or transcripts. Exporter registration belongs to the consuming host.
+
+Logs carry sizes, durations, counts, status codes and outcomes, never audio, transcripts, reply text
+or local paths. Each transcription or synthesis logs once at the pipeline boundary: Information on
+success, Warning for a rejected, timed-out or empty result (an over-long reply is skipped at Debug)
+and Error for a backend failure; a missing ffmpeg binary adds one Error. Provider adapters log their
+own rejections, empty results and encoding failures only at Debug, because the pipeline or the
+caller already reports the thrown exception or empty response.
 
 Provider adapters implement Microsoft.Extensions.AI
 [`ISpeechToTextClient`](https://github.com/dotnet/extensions/blob/main/src/Libraries/Microsoft.Extensions.AI.Abstractions/SpeechToText/ISpeechToTextClient.cs)

@@ -216,9 +216,8 @@ public sealed partial class PiperTextToSpeechClient(
         //The two failures need telling apart: one is a missing binary, the other a bad stream.
         if (result.ExitCode == -1)
         {
-            LogFfmpegUnavailable(logger, ffmpegPath);
             throw new InvalidOperationException(
-                $"{nameof(PiperTextToSpeechClient)} could not start ffmpeg at '{ffmpegPath}'. "
+                $"{nameof(PiperTextToSpeechClient)} could not start the ffmpeg configured in {nameof(TextToSpeechConfig)}.{nameof(TextToSpeechConfig.FfmpegPath)}. "
                 + $"{nameof(TextToSpeechProvider.Piper)} emits raw PCM and needs it to encode Opus.");
         }
         if (!result.Success || result.Output.Length == 0)
@@ -231,15 +230,11 @@ public sealed partial class PiperTextToSpeechClient(
         return result.Output;
     }
 
-    [LoggerMessage(LogLevel.Warning, "{ClassName} received no audio from {Host}:{Port}")]
+    [LoggerMessage(LogLevel.Debug, "{ClassName} received no audio from {Host}:{Port}")]
     private static partial void LogNoAudioReturned(ILogger logger, string host, int port,
         string className = nameof(PiperTextToSpeechClient));
 
-    [LoggerMessage(LogLevel.Error, "{ClassName} could not start ffmpeg at {FfmpegPath}")]
-    private static partial void LogFfmpegUnavailable(ILogger logger, string ffmpegPath,
-        string className = nameof(PiperTextToSpeechClient));
-
-    [LoggerMessage(LogLevel.Error, "{ClassName} Opus encoding failed, ExitCode={ExitCode}, ErrorLength={ErrorLength}")]
+    [LoggerMessage(LogLevel.Debug, "{ClassName} Opus encoding failed, ExitCode={ExitCode}, ErrorLength={ErrorLength}")]
     private static partial void LogEncodingFailed(ILogger logger, int exitCode, int errorLength,
         string className = nameof(PiperTextToSpeechClient));
 
