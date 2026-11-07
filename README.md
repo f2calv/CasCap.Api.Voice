@@ -1,6 +1,6 @@
 # CasCap.Api.Voice
 
-Speech-to-text and text-to-speech libraries for .NET 10 applications, with interchangeable Whisper,
+Speech-to-text and text-to-speech libraries for .NET 11 applications, with interchangeable Whisper,
 Azure AI Speech, Azure OpenAI and Piper adapters. Validate and normalize audio, transcribe it or
 synthesize spoken replies without coupling the application to a messaging transport.
 
@@ -38,7 +38,7 @@ graph TD
 
 ## Quick Start
 
-In a .NET 10 Generic Host application:
+In a .NET 11 Generic Host application:
 
 The application-facing contracts are
 [`IVoiceTranscriptionService`](src/CasCap.Api.Voice/Abstractions/IVoiceTranscriptionService.cs) and
@@ -116,7 +116,7 @@ not require writable temporary-file storage.
 
 ## Development
 
-Use the .NET 10 SDK. The Release solution consumes published cross-repository dependencies and can be
+Use the pinned .NET 11 RC3 SDK. The Release solution consumes published cross-repository dependencies and can be
 built from this checkout alone:
 
 ```powershell
@@ -132,7 +132,7 @@ dotnet build CasCap.Api.Voice.Debug.slnx --configuration Debug
 Run the credential-free unit tests:
 
 ```powershell
-dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net10.0 --filter-not-trait Category=Integration
+dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net11.0 --filter-not-trait Category=Integration
 ```
 
 The [test README](src/CasCap.Api.Voice.Tests/README.md) lists source-declared cases, prerequisites and

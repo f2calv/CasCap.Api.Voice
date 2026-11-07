@@ -1,6 +1,6 @@
 # CasCap.Api.Voice
 
-Speech-to-text and text-to-speech pipelines for .NET 10 applications. Use provider-neutral
+Speech-to-text and text-to-speech pipelines for .NET 11 applications. Use provider-neutral
 transcription and synthesis contracts while selecting Whisper, Azure or Piper behind dependency injection.
 
 ## Installation
