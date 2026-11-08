@@ -1,6 +1,6 @@
 # CasCap.Api.Voice
 
-Speech-to-text and text-to-speech libraries for .NET 11 applications, with interchangeable Whisper,
+Speech-to-text and text-to-speech libraries for .NET 10/11 applications, with interchangeable Whisper,
 Azure AI Speech, Azure OpenAI and Piper adapters. Validate and normalize audio, transcribe it or
 synthesize spoken replies without coupling the application to a messaging transport.
 
@@ -116,7 +116,7 @@ not require writable temporary-file storage.
 
 ## Development
 
-Use the pinned .NET 11 RC3 SDK. The Release solution consumes published cross-repository dependencies and can be
+Use the pinned .NET 11 SDK. The Release solution consumes published cross-repository dependencies and can be
 built from this checkout alone:
 
 ```powershell

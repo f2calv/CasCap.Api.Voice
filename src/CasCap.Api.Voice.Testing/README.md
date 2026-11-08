@@ -22,7 +22,7 @@ contracts. These fakes stand in for a real provider, so a consumer can
 exercise transcription, synthesis and its own orchestration deterministically. There is no
 network, audio tooling or credential involved.
 
-**Target framework:** `net11.0`
+**Target frameworks:** `net10.0`, `net11.0`
 
 ## Public Surface
 

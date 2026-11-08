@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net11.0</TargetFramework>
+    <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
     <Description>Provider-neutral speech-to-text and text-to-speech components for .NET applications.</Description>
     <IsPackable>true</IsPackable>
     <PackageTags>speech-to-text,text-to-speech,voice,whisper,ffmpeg,azure,piper,dotnet</PackageTags>

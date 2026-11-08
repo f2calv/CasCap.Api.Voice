@@ -2,11 +2,11 @@
 
 Credential-free tests for the voice adapters, media policies, registration and metrics, plus four
 integration-designated cases that check configuration and then explicitly skip live execution.
-The project targets .NET 11.
+The project targets .NET 10 and .NET 11.
 
 ## Running the Tests
 
-From the repository root, with the pinned .NET 11 RC3 SDK:
+From the repository root, with the pinned .NET 11 SDK:
 
 ```powershell
 dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net11.0 --filter-not-trait Category=Integration
