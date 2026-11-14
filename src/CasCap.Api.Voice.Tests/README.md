@@ -2,14 +2,14 @@
 
 Credential-free tests for the voice adapters, media policies, registration and metrics, plus four
 integration-designated cases that check configuration and then explicitly skip live execution.
-The project targets .NET 10.
+The project targets .NET 10 and .NET 11.
 
 ## Running the Tests
 
-From the repository root, with the .NET 10 SDK:
+From the repository root, with a stable .NET 11 SDK:
 
 ```powershell
-dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net10.0 --filter-not-trait Category=Integration
+dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net11.0 --filter-not-trait Category=Integration
 ```
 
 The unit subset needs no service, ffmpeg or credentials. Transcription cases use generated normalized
