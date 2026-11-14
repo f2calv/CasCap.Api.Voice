@@ -116,7 +116,7 @@ not require writable temporary-file storage.
 
 ## Development
 
-Use the pinned .NET 11 SDK. The Release solution consumes published cross-repository dependencies and can be
+Use a stable .NET 11 SDK. The Release solution consumes published cross-repository dependencies and can be
 built from this checkout alone:
 
 ```powershell

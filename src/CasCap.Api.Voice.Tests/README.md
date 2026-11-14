@@ -6,7 +6,7 @@ The project targets .NET 10 and .NET 11.
 
 ## Running the Tests
 
-From the repository root, with the pinned .NET 11 SDK:
+From the repository root, with a stable .NET 11 SDK:
 
 ```powershell
 dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net11.0 --filter-not-trait Category=Integration
