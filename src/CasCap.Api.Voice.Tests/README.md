@@ -1,8 +1,7 @@
 # CasCap.Api.Voice.Tests
 
-Credential-free tests for the voice adapters, media policies, registration and metrics, plus four
-integration-designated cases that check configuration and then explicitly skip live execution.
-The project targets .NET 10 and .NET 11.
+Credential-free tests for the voice adapters, media policies, registration and metrics, plus an
+opt-in Azure OpenAI Realtime speech-speed probe. The project targets .NET 10 and .NET 11.
 
 ## Running the Tests
 
@@ -14,6 +13,23 @@ dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj -
 
 The unit subset needs no service, ffmpeg or credentials. Transcription cases use generated normalized
 WAV data and fake provider clients rather than a speech backend.
+
+## Azure Realtime Speech-Speed Probe
+
+Use an approved Azure OpenAI Realtime test deployment. Supply `AzureRealtimeProbe__Endpoint`
+(the HTTPS resource root), `AzureRealtimeProbe__Deployment`, and `AzureRealtimeProbe__ApiKey`
+through the local environment or CI secret store. Set `AzureRealtimeProbe__Enabled` to `true`
+only for the targeted run:
+
+```powershell
+dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --framework net10.0 --filter-class CasCap.Tests.AzureOpenAiRealtimeSpeedTests
+```
+
+The test requests two synthetic audio replies in a single Azure WebSocket session, at 0.8x and
+1.2x. It checks Azure's acknowledgement, verifies that both replies say the expected phrase, and
+compares their PCM lengths. It does not measure perceived pace or validate a WebRTC client. The test
+uses no microphone, agent tools, or learner data, and does not save audio or transcripts. Live
+synthesis may incur charges.
 
 ## Tests
 
@@ -27,37 +43,39 @@ WAV data and fake provider clients rather than a speech backend.
 | `VoiceTranscriptionMetricsTests` | 3 | 3 |
 | `WhisperAsrSpeechToTextClientTests` | 4 | 9 |
 | Unit subtotal | **27** | **47** |
+| `AzureOpenAiRealtimeSpeedTests` | 1 | 1 |
 | `AzureOpenAiTextToSpeechClientTests` | 1 | 1 |
 | `AzureSpeechTextToSpeechClientTests` | 1 | 1 |
 | `AzureSpeechToTextClientTests` | 1 | 1 |
 | `PiperTextToSpeechClientTests` | 1 | 1 |
-| **Total** | **31** | **51** |
+| **Total** | **32** | **52** |
 
 Counts are source-declared before skips, not observed execution or provider-coverage results.
 
 ## Trait Categories
 
-`SpeechToText`, `TextToSpeech`, and `Integration` are used. Integration cases also carry their
-provider-area trait.
+`SpeechToText`, `TextToSpeech`, and `Integration` are used.
 
 ## Skipped Tests
 
 | Reason | Cases |
 | --- | ---: |
+| Azure Realtime probe not enabled or connection settings incomplete | 1 |
 | Azure OpenAI endpoint absent; otherwise live Azure OpenAI execution is explicitly disabled | 1 |
 | Azure Speech synthesis endpoint absent; otherwise live Azure Speech execution is explicitly disabled | 1 |
 | Azure Speech transcription endpoint absent; otherwise live Azure Speech execution is explicitly disabled | 1 |
 | Piper endpoint absent; otherwise live Piper execution is explicitly disabled | 1 |
-| **Total** | **4** |
+| **Total without probe configuration** | **5** |
 
-All four integration-designated cases read environment variables only and skip on either branch.
-Providing credentials does not turn them into live tests. No unit cases declare skips.
+The other four integration-designated cases always skip, even when configured. No unit cases
+declare skips.
 
 ## Layout
 
 ```text
 Tests/
 ├── Integration/
+│   ├── AzureOpenAiRealtimeSpeedTests.cs
 │   ├── AzureOpenAiTextToSpeechClientTests.cs
 │   ├── AzureSpeechTextToSpeechClientTests.cs
 │   ├── AzureSpeechToTextClientTests.cs
