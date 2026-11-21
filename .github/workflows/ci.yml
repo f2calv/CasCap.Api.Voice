@@ -49,7 +49,7 @@ jobs:
           version: ${{ needs.versioning.outputs.version }}
           solution-name: CasCap.Api.Voice.Release.slnx
           dotnet-restore-args: -p:Configuration=Release
-          dotnet-test-args: --filter-not-trait Category=Integration
+          dotnet-test-args: --filter-not-trait Category=LiveProvider
 
   release:
     needs: [lint, versioning, build]

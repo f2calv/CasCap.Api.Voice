@@ -5,6 +5,7 @@ namespace CasCap.Tests;
 
 /// <summary>Verifies an Azure OpenAI Realtime deployment accepts speed updates between audio replies.</summary>
 [Trait("Category", "Integration")]
+[Trait("Category", "LiveProvider")]
 public sealed class AzureOpenAiRealtimeSpeedTests(ITestOutputHelper output) : TestBase(output)
 {
     private const string Phrase = "Heute trinken wir Tee.";
@@ -13,26 +14,14 @@ public sealed class AzureOpenAiRealtimeSpeedTests(ITestOutputHelper output) : Te
     [Fact]
     public async Task SessionUpdate_ChangesSpeedBetweenAudioReplies()
     {
-        using var localConfiguration = new ConfigurationManager();
-        localConfiguration.SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
-        var settings = localConfiguration.GetSection("AzureRealtimeProbe");
-        Assert.SkipUnless(settings.GetValue<bool>("Enabled"),
-            "Enable the Azure Realtime probe in appsettings.Local.json.");
-        var endpoint = settings["Endpoint"];
-        var deployment = settings["Deployment"];
-        Assert.False(string.IsNullOrWhiteSpace(endpoint) || string.IsNullOrWhiteSpace(deployment),
-            "The enabled Azure Realtime probe requires an endpoint and deployment in appsettings.Local.json.");
-        Assert.True(Uri.TryCreate(endpoint, UriKind.Absolute, out var resource) &&
-            resource.Scheme == Uri.UriSchemeHttps && resource.PathAndQuery == "/" &&
-            resource.UserInfo.Length == 0 && resource.Fragment.Length == 0,
-            "Configure the Azure Realtime probe with the HTTPS resource root.");
+        var settings = LoadProbeConfig(AppContext.BaseDirectory);
+        Assert.SkipUnless(settings.Enabled, $"Enable the Azure Realtime probe in {LocalSettingsFileName}.");
 
-        var address = new UriBuilder(resource!)
+        var address = new UriBuilder(settings.GetResourceEndpoint())
         {
             Scheme = "wss",
             Path = "/openai/v1/realtime",
-            Query = $"model={Uri.EscapeDataString(deployment!)}",
+            Query = $"model={Uri.EscapeDataString(settings.Deployment)}",
         };
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
         deadline.CancelAfter(TimeSpan.FromSeconds(60));

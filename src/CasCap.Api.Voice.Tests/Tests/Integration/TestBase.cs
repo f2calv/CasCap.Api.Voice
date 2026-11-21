@@ -3,14 +3,21 @@ using Azure.Identity;
 
 namespace CasCap.Tests;
 
-/// <summary>Provides environment-only configuration and xUnit logging for optional provider tests.</summary>
+/// <summary>Provides local-only configuration and Azure CLI authentication for the Realtime probe.</summary>
 public abstract class TestBase(ITestOutputHelper output)
 {
     protected ITestOutputHelper Output { get; } = output;
 
-    protected IConfiguration Configuration { get; } = new ConfigurationBuilder()
-        .AddEnvironmentVariables()
-        .Build();
+    internal const string LocalSettingsFileName = "appsettings.Local.json";
+
+    internal static AzureRealtimeProbeConfig LoadProbeConfig(string basePath)
+    {
+        using var configuration = new ConfigurationManager();
+        configuration.SetBasePath(basePath)
+            .AddJsonFile(LocalSettingsFileName, optional: true, reloadOnChange: false);
+        return configuration.GetSection(AzureRealtimeProbeConfig.ConfigurationSectionName)
+            .Get<AzureRealtimeProbeConfig>() ?? new();
+    }
 
     /// <summary>Gets a Microsoft Entra access token from the active Azure CLI session.</summary>
     protected static async ValueTask<AccessToken> GetAzureCliTokenAsync(string scope, CancellationToken cancellationToken)

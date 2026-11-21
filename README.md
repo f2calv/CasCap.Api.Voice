@@ -129,15 +129,14 @@ The Debug solution substitutes adjacent source checkouts for the shared CasCap l
 dotnet build CasCap.Api.Voice.Debug.slnx --configuration Debug
 ```
 
-Run the credential-free unit tests:
+Run the credential-free tests:
 
 ```powershell
-dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net11.0 --filter-not-trait Category=Integration
+dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net11.0 --filter-not-trait Category=LiveProvider
 ```
 
 The [test README](src/CasCap.Api.Voice.Tests/README.md) lists source-declared cases, prerequisites and
-skip behavior. The four integration-designated cases are explicitly disabled even when endpoints
-are configured; they do not currently exercise live providers.
+skip behavior. The live Azure Realtime probe requires a local opt-in.
 
 ## License
 
