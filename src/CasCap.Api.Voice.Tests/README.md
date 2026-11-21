@@ -16,10 +16,13 @@ WAV data and fake provider clients rather than a speech backend.
 
 ## Azure Realtime Speech-Speed Probe
 
-Use an approved Azure OpenAI Realtime test deployment. Supply `AzureRealtimeProbe__Endpoint`
-(the HTTPS resource root), `AzureRealtimeProbe__Deployment`, and `AzureRealtimeProbe__ApiKey`
-through the local environment or CI secret store. Set `AzureRealtimeProbe__Enabled` to `true`
-only for the targeted run:
+Use an approved Azure OpenAI Realtime test deployment. Run `az login` in the resource's tenant
+with an account that has the **Cognitive Services OpenAI User** role on the resource. The test
+uses that Azure CLI session to get a Microsoft Entra token; no API key is needed.
+
+Set `AzureRealtimeProbe__Endpoint` (the HTTPS resource root), `AzureRealtimeProbe__Deployment`
+(the deployment name), and `AzureRealtimeProbe__Enabled=true` in the local environment before
+the targeted run:
 
 ```powershell
 dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --framework net10.0 --filter-class CasCap.Tests.AzureOpenAiRealtimeSpeedTests

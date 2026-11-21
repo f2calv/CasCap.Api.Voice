@@ -17,9 +17,8 @@ public sealed class AzureOpenAiRealtimeSpeedTests(ITestOutputHelper output) : Te
         Assert.SkipUnless(settings.GetValue<bool>("Enabled"), "The Azure Realtime probe is not enabled.");
         var endpoint = settings["Endpoint"];
         var deployment = settings["Deployment"];
-        var apiKey = settings["ApiKey"];
-        Assert.SkipWhen(string.IsNullOrWhiteSpace(endpoint) || string.IsNullOrWhiteSpace(deployment) ||
-            string.IsNullOrWhiteSpace(apiKey), "The Azure Realtime probe connection settings are incomplete.");
+        Assert.SkipWhen(string.IsNullOrWhiteSpace(endpoint) || string.IsNullOrWhiteSpace(deployment),
+            "Configure the Azure Realtime probe endpoint and deployment.");
         Assert.True(Uri.TryCreate(endpoint, UriKind.Absolute, out var resource) &&
             resource.Scheme == Uri.UriSchemeHttps && resource.PathAndQuery == "/" &&
             resource.UserInfo.Length == 0 && resource.Fragment.Length == 0,
@@ -34,14 +33,16 @@ public sealed class AzureOpenAiRealtimeSpeedTests(ITestOutputHelper output) : Te
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
         deadline.CancelAfter(TimeSpan.FromSeconds(60));
         using var socket = new ClientWebSocket();
-        socket.Options.SetRequestHeader("api-key", apiKey);
+        var token = await GetAzureCliTokenAsync("https://ai.azure.com/.default", deadline.Token);
+        socket.Options.SetRequestHeader("Authorization", $"Bearer {token.Token}");
+
         try
         {
             await socket.ConnectAsync(address.Uri, deadline.Token);
         }
         catch (WebSocketException)
         {
-            Assert.Fail("Azure rejected the Realtime WebSocket connection or could not be reached.");
+            Assert.Fail("The Azure Realtime WebSocket could not connect. Check the endpoint, deployment, network access, and Cognitive Services OpenAI User role.");
         }
 
         await WaitForEventAsync(socket, "session.created", deadline.Token);

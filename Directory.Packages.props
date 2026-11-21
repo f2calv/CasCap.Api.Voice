@@ -3,6 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Azure.Identity" Version="1.21.0" />
     <PackageVersion Include="CasCap.Api.Azure.Auth" Version="2.1.0" />
     <PackageVersion Include="CasCap.Api.Azure.CognitiveServices" Version="2.1.0" />
     <PackageVersion Include="CasCap.Common.Abstractions" Version="5.2.0" />
