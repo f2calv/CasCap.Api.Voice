@@ -5,7 +5,7 @@ namespace CasCap.Tests;
 
 /// <summary>Verifies an Azure OpenAI Realtime deployment accepts speed updates between audio replies.</summary>
 [Trait("Category", "Integration")]
-[Trait("Category", "LiveProvider")]
+[Trait("Category", "Live")]
 public sealed class AzureOpenAiRealtimeSpeedTests(ITestOutputHelper output) : TestBase(output)
 {
     private const string Phrase = "Heute trinken wir Tee.";

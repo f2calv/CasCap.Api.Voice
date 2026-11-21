@@ -132,7 +132,7 @@ dotnet build CasCap.Api.Voice.Debug.slnx --configuration Debug
 Run the credential-free tests:
 
 ```powershell
-dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net11.0 --filter-not-trait Category=LiveProvider
+dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net11.0 --filter-not-trait Category=Live
 ```
 
 The [test README](src/CasCap.Api.Voice.Tests/README.md) lists source-declared cases, prerequisites and

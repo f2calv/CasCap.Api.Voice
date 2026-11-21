@@ -8,14 +8,14 @@ opt-in Azure OpenAI Realtime speech-speed probe. The project targets .NET 10 and
 From the repository root, with a stable .NET 11 SDK:
 
 ```powershell
-dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net11.0 --filter-not-trait Category=LiveProvider
+dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --configuration Release --framework net11.0 --filter-not-trait Category=Live
 ```
 
 The unit subset needs no service, ffmpeg or credentials. Transcription cases use generated normalized
 WAV data and fake provider clients rather than a speech backend.
 
 The offline probe-configuration tests use temporary JSON files and never authenticate or connect.
-The `LiveProvider` exclusion matches CI and still runs those checks.
+The `Category=Live` exclusion matches CI and still runs those checks.
 
 ## Azure Realtime Speech-Speed Probe
 
@@ -75,7 +75,7 @@ Counts are source-declared before skips, not observed execution or provider-cove
 
 ## Trait Categories
 
-`SpeechToText`, `TextToSpeech`, `Integration`, and `LiveProvider` are used.
+`SpeechToText`, `TextToSpeech`, `Integration`, and `Live` are used.
 
 ## Skipped Tests
 
