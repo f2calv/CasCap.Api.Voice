@@ -13,12 +13,16 @@ public sealed class AzureOpenAiRealtimeSpeedTests(ITestOutputHelper output) : Te
     [Fact]
     public async Task SessionUpdate_ChangesSpeedBetweenAudioReplies()
     {
-        var settings = Configuration.GetSection("AzureRealtimeProbe");
-        Assert.SkipUnless(settings.GetValue<bool>("Enabled"), "The Azure Realtime probe is not enabled.");
+        using var localConfiguration = new ConfigurationManager();
+        localConfiguration.SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
+        var settings = localConfiguration.GetSection("AzureRealtimeProbe");
+        Assert.SkipUnless(settings.GetValue<bool>("Enabled"),
+            "Enable the Azure Realtime probe in appsettings.Local.json.");
         var endpoint = settings["Endpoint"];
         var deployment = settings["Deployment"];
-        Assert.SkipWhen(string.IsNullOrWhiteSpace(endpoint) || string.IsNullOrWhiteSpace(deployment),
-            "Configure the Azure Realtime probe endpoint and deployment.");
+        Assert.False(string.IsNullOrWhiteSpace(endpoint) || string.IsNullOrWhiteSpace(deployment),
+            "The enabled Azure Realtime probe requires an endpoint and deployment in appsettings.Local.json.");
         Assert.True(Uri.TryCreate(endpoint, UriKind.Absolute, out var resource) &&
             resource.Scheme == Uri.UriSchemeHttps && resource.PathAndQuery == "/" &&
             resource.UserInfo.Length == 0 && resource.Fragment.Length == 0,

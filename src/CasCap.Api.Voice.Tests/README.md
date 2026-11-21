@@ -20,13 +20,30 @@ Use an approved Azure OpenAI Realtime test deployment. Run `az login` in the res
 with an account that has the **Cognitive Services OpenAI User** role on the resource. The test
 uses that Azure CLI session to get a Microsoft Entra token; no API key is needed.
 
-Set `AzureRealtimeProbe__Endpoint` (the HTTPS resource root), `AzureRealtimeProbe__Deployment`
-(the deployment name), and `AzureRealtimeProbe__Enabled=true` in the local environment before
-the targeted run:
+Create `appsettings.Local.json` next to the test project file. It is Git-ignored and is the
+only source of target settings for this probe. Use the HTTPS resource root and the deployment
+name, not the model name. Replace both placeholders with the approved test target:
+
+```json
+{
+  "AzureRealtimeProbe": {
+    "Enabled": true,
+    "Endpoint": "https://example.com/",
+    "Deployment": "example-realtime-deployment"
+  }
+}
+```
+
+Then run only the probe from the repository root:
 
 ```powershell
-dotnet test --project src/CasCap.Api.Voice.Tests/CasCap.Api.Voice.Tests.csproj --framework net10.0 --filter-class CasCap.Tests.AzureOpenAiRealtimeSpeedTests
+dotnet test --project .\src\CasCap.Api.Voice.Tests\CasCap.Api.Voice.Tests.csproj `
+  --configuration Debug --framework net10.0 -p:TargetFramework=net10.0 `
+  --filter-class CasCap.Tests.AzureOpenAiRealtimeSpeedTests
 ```
+
+To disable the probe, set `Enabled` to `false` and rebuild. If you delete the local file,
+also remove its copy from the test output directory before reusing that output.
 
 The test requests two synthetic audio replies in a single Azure WebSocket session, at 0.8x and
 1.2x. It checks Azure's acknowledgement, verifies that both replies say the expected phrase, and
@@ -63,7 +80,7 @@ Counts are source-declared before skips, not observed execution or provider-cove
 
 | Reason | Cases |
 | --- | ---: |
-| Azure Realtime probe not enabled or connection settings incomplete | 1 |
+| Azure Realtime probe not enabled in local settings | 1 |
 | Azure OpenAI endpoint absent; otherwise live Azure OpenAI execution is explicitly disabled | 1 |
 | Azure Speech synthesis endpoint absent; otherwise live Azure Speech execution is explicitly disabled | 1 |
 | Azure Speech transcription endpoint absent; otherwise live Azure Speech execution is explicitly disabled | 1 |
